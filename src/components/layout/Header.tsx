@@ -13,7 +13,7 @@ const BiDown = lazy(() => import('react-icons/bi').then(module => ({
 })));
 
 export default function Header({ title }: HeaderProps) {
-    const { id } = useMemberStore();
+    const { username: id } = useMemberStore();
 
     return (
         <div className="bg-white text-black border-b-[4px] border-point-red w-full h-[140px] px-[30px]">

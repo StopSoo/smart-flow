@@ -2,9 +2,10 @@ import { InputHTMLAttributes } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  isCorrect: boolean;
 }
 
-export default function Input({ label, className = "", ...props }: InputProps) {
+export default function Input({ label, isCorrect, className = "", ...props }: InputProps) {
   return (
     <div className="flex items-center gap-4 w-full">
       <div className="w-[130px]">
@@ -17,7 +18,7 @@ export default function Input({ label, className = "", ...props }: InputProps) {
         }
       </div>
       <input
-        className={`flex-1 w-[440px] h-[70px] rounded-[30px] border-4 border-light-gray bg-white px-6 text-medium-gray text-xl outline-none focus:border-medium-gray transition-colors ${className}`}
+        className={`flex-1 w-[440px] h-[70px] rounded-[30px] border-4 bg-white px-6 text-medium-gray text-xl outline-none focus:border-medium-gray transition-colors ${isCorrect ? 'border-light-gray' : 'border-point-red'} ${className}`}
         {...props}
       />
     </div>

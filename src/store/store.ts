@@ -1,4 +1,4 @@
-import { MemberStore } from '@/types/member/member';
+import { MemberStore } from '@/types/member/types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -6,8 +6,8 @@ import { persist } from 'zustand/middleware';
 export const useMemberStore = create<MemberStore>()(
     persist(
         (set) => ({
-            id: 'covi', /* TODO: API 연결 시 수정 */
-            setId: (newState) => set({ id: newState }),
+            username: 'covi', /* TODO: API 연결 시 수정 */
+            setUsername: (newState) => set({ username: newState }),
         }),
         {
             name: 'memberNameStorage',

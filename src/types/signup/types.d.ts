@@ -1,7 +1,7 @@
 export interface SignupFormData {
-  userId: string;
+  username: string;
   password: string;
   passwordConfirm: string;
-  department: string;
-  businessOffice: string;
+  headquarter: string;
+  branch_name: string;
 }
