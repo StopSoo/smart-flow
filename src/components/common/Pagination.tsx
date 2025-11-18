@@ -27,7 +27,7 @@ export default function Pagination({
                     disabled={page === 1}
                     className='flex items-center justify-center w-10 h-10 border-2 border-light-gray cursor-pointer'
                 >
-                    <SlArrowLeft size={24} className='text-point-blue' />
+                    <SlArrowLeft size={20} className='text-point-blue' />
                 </button>
 
                 {
@@ -60,7 +60,7 @@ export default function Pagination({
                     disabled={page === pageNum}
                     className='flex items-center justify-center w-10 h-10 border-2 border-light-gray cursor-pointer'
                 >
-                    <SlArrowRight />
+                    <SlArrowRight size={20} className='text-point-blue' />
                 </button>
             </div>
         </section>

@@ -325,6 +325,7 @@ export default function ProcessDataPage() {
 
     const handleSort = (value: string) => {
         setSortConfig(value);
+        setIsOpenTab(false);
         // TODO: API 연동 - 데이터 정렬 순서 변경
     };
 
@@ -498,34 +499,45 @@ export default function ProcessDataPage() {
 
                         <tbody>
                             {
-                                MOCK_DATA.map((item) => (
-                                    <tr key={item.id} className="border-b border-light-gray text-center hover:bg-light-gray/30 cursor-pointer">
-                                        <td className="px-4 py-3">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedItems.includes(item.id)}
-                                                onChange={() => handleToggleItem(item.id)}
-                                                className="w-5 h-5 cursor-pointer accent-point-blue"
-                                            />
-                                        </td>
-                                        <td className="px-4 py-3">{item.id}</td>
-                                        <td className="px-4 py-3 whitespace-pre-line text-sm">
-                                            {item.productionDate}
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-pre-line text-sm">
-                                            {item.productionLine}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm">{item.product}</td>
-                                        <td className="px-4 py-3 text-sm">
-                                            {item.defectRate.percentage}%<br />
-                                            ({item.defectRate.defectCount}/{item.defectRate.totalCount})
-                                        </td>
-                                        <td className={`px-4 py-3 text-sm font-bold ${item.inspectionResult === "불량" ? "text-red-500" : ""}`}>
-                                            {item.inspectionResult}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm">{item.aiModel}</td>
-                                    </tr>
-                                ))
+                                MOCK_DATA.length !== 0 ?
+                                    MOCK_DATA.map((item) => (
+                                        <tr key={item.id} className="text-base border-b border-light-gray text-center hover:bg-light-gray/30 cursor-pointer">
+                                            <td className="px-4 py-3">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedItems.includes(item.id)}
+                                                    onChange={() => handleToggleItem(item.id)}
+                                                    className="w-8 h-8 cursor-pointer accent-point-blue"
+                                                />
+                                            </td>
+                                            <td className="px-4 py-3">{item.id}</td>
+                                            <td className="px-4 py-3 whitespace-pre-line">
+                                                {item.productionDate}
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-pre-line">
+                                                {item.productionLine}
+                                            </td>
+                                            <td className="px-4 py-3">{item.product}</td>
+                                            <td className="px-4 py-3">
+                                                {item.defectRate.percentage}%<br />
+                                                ({item.defectRate.defectCount}/{item.defectRate.totalCount})
+                                            </td>
+                                            <td className={`px-4 py-3 font-bold ${item.inspectionResult === "불량" ? "text-point-red" : ""}`}>
+                                                {item.inspectionResult}
+                                            </td>
+                                            <td className="px-4 py-3">{item.aiModel}</td>
+                                        </tr>
+                                    ))
+                                    : (
+                                        <tr>
+                                            <td
+                                                colSpan={8}
+                                                className="py-40 text-center font-bold text-lg text-medium-gray"
+                                            >
+                                                조회되는 생산 데이터가 없습니다.
+                                            </td>
+                                        </tr>
+                                    )
                             }
                         </tbody>
                     </table>
@@ -559,12 +571,15 @@ export default function ProcessDataPage() {
                     }
                 </div>
 
-                <Pagination
-                    total={MOCK_DATA.length}
-                    page={currentPage}
-                    limit={Number(itemsPerPage)}
-                    setPage={setCurrentPage}
-                />
+                {
+                    MOCK_DATA.length !== 0
+                    && <Pagination
+                        total={MOCK_DATA.length}
+                        page={currentPage}
+                        limit={Number(itemsPerPage)}
+                        setPage={setCurrentPage}
+                    />
+                }
             </div>
         </Layout>
     );

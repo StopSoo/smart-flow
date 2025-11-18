@@ -70,7 +70,7 @@ export function Picker({ value, title, type, onChange, options = [] }: PickerPro
             onClick={handleClick}
         >
             {title && (
-                <label className="text-sm text-point-blue font-bold mb-1">
+                <label className="text-md text-point-blue font-bold mb-1">
                     {title}
                 </label>
             )}
