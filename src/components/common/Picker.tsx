@@ -1,4 +1,4 @@
-import { ChangeEvent, lazy, Suspense, useRef, useState, useEffect } from "react"
+import { lazy, Suspense, useRef, useState, useEffect } from "react"
 
 interface PickerOption {
     label: string;
@@ -28,10 +28,6 @@ export function Picker({ value, title, type, onChange, options = [] }: PickerPro
         } else if (type === "select") {
             setIsOpen(!isOpen);
         }
-    };
-
-    const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-        onChange(e.target.value);
     };
 
     const handleSelectOption = (optionValue: string) => {
@@ -84,7 +80,7 @@ export function Picker({ value, title, type, onChange, options = [] }: PickerPro
                             aria-label="date picker"
                             value={value}
                             className="text-sm w-full bg-transparent pr-4 outline-none [&::-webkit-calendar-picker-indicator]:hidden cursor-pointer"
-                            onChange={handleDateChange}
+                            onChange={(e) => onChange(e.target.value)}
                             onClick={(e) => e.stopPropagation()}
                         />
                     ) : (

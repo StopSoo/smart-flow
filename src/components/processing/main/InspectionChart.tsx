@@ -1,5 +1,5 @@
 import type { InspectionDataPoint } from "@/types/processing/types";
-import { Picker } from "../common/Picker";
+import { Picker } from "@/components/common/Picker";
 import { motion } from "framer-motion";
 
 export function InspectionChart({
@@ -27,13 +27,13 @@ export function InspectionChart({
             type="date"
             value={startDate}
             title="생산 시작 일자"
-            onChange={(e) => onStartDateChange(e.target.value)}
+            onChange={onStartDateChange}
           />
           <Picker
             type="date"
             value={endDate}
             title="생산 종료 일자"
-            onChange={(e) => onEndDateChange(e.target.value)}
+            onChange={onEndDateChange}
           />
         </div>
       </div>

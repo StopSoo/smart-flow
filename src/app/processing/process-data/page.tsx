@@ -4,8 +4,9 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Picker } from "@/components/common/Picker";
 import { ProcessDataItem, FilterOptions } from "@/types/processing/process-data";
-import Button from "@/components/processing/Button";
+import Button from "@/components/processing/process-data/Button";
 import Pagination from "@/components/common/Pagination";
+import { useRouter } from "next/navigation";
 
 const HiArrowUp = lazy(() => import('react-icons/hi').then(module => ({
     default: module.HiArrowUp
@@ -289,6 +290,8 @@ const MOCK_DATA: ProcessDataItem[] = [
 ];
 
 export default function ProcessDataPage() {
+    const router = useRouter();
+
     const [filters, setFilters] = useState<FilterOptions>({
         product: "전체",
         startDate: "2025-05-21",
@@ -505,7 +508,11 @@ export default function ProcessDataPage() {
                             {
                                 MOCK_DATA.length !== 0 ?
                                     MOCK_DATA.slice((currentPage - 1) * Number(itemsPerPage), currentPage * Number(itemsPerPage)).map((item) => (
-                                        <tr key={item.id} className="text-base border-b border-light-gray text-center hover:bg-light-gray/30 cursor-pointer">
+                                        <tr
+                                            key={item.id}
+                                            className="text-base border-b border-light-gray text-center hover:bg-light-gray/30 cursor-pointer"
+                                            onClick={() => router.push(`/processing/process-data/${item.id}`)}
+                                        >
                                             <td className="p-4">
                                                 <input
                                                     type="checkbox"

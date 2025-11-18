@@ -2,15 +2,15 @@
 
 import Layout from "@/components/layout/Layout";
 import { useState } from "react";
-import { DailyDataChart } from "@/components/processing/DailyDataChart";
-import { ExceptionDataChart } from "@/components/processing/ExceptionDataChart";
-import { InspectionChart } from "@/components/processing/InspectionChart";
+import { DailyDataChart } from "@/components/processing/main/DailyDataChart";
+import { ExceptionDataChart } from "@/components/processing/main/ExceptionDataChart";
+import { InspectionChart } from "@/components/processing/main/InspectionChart";
 import type {
     DailyDataPoint,
     ExceptionDataPoint,
     InspectionDataPoint,
 } from "@/types/processing/types";
-import { ProductionLines } from "@/components/processing/ProductionLines";
+import { ProductionLines } from "@/components/processing/main/ProductionLines";
 
 export default function MainPage() {
     const [startDate, setStartDate] = useState("2025-05-01");

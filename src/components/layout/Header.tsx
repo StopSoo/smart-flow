@@ -33,7 +33,7 @@ export default function Header({ title }: HeaderProps) {
                 <div className="w-[4px] h-[140px] bg-point-red" />
 
                 <div className="flex flex-row w-full items-center justify-between">
-                    <p className="text-4xl font-bold whitespace-nowrap">{title}</p>
+                    <p className="text-[44px] font-bold whitespace-nowrap">{title}</p>
                     <button
                         className="flex flex-row items-center gap-4 cursor-pointer"
                         onClick={() => setIsModalOpen()}
