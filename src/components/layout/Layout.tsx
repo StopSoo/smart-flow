@@ -10,12 +10,12 @@ interface LayoutProps {
 
 export default function Layout({ headerTitle, children }: LayoutProps) {
     return (
-        <>
+        <div className="h-full min-h-screen">
             <Header title={headerTitle} />
             <div className="flex-1 flex flex-row">
                 <MenuBar />
                 {children}
             </div>
-        </>
+        </div>
     );
 }

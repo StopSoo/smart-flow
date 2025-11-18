@@ -21,7 +21,7 @@ export default function Header({ title }: HeaderProps) {
                 <Image
                     src="/assets/nexten_logo_B.png"
                     alt="nexten logo"
-                    className="w-[200px] py-[20px]"
+                    className="min-w-[188px] py-[20px] whitespace-nowrap"
                     width={200}
                     height={95}
                     priority
@@ -31,11 +31,11 @@ export default function Header({ title }: HeaderProps) {
                 <div className="w-[4px] h-[140px] bg-point-red" />
 
                 <div className="flex flex-row w-full items-center justify-between">
-                    <p className="text-4xl font-bold">{title}</p>
+                    <p className="text-4xl font-bold whitespace-nowrap">{title}</p>
                     <button
                         className="flex flex-row items-center gap-4 cursor-pointer"
                     >
-                        <p className="text-3xl font-bold">{id}</p>
+                        <p className="text-3xl font-bold whitespace-nowrap">{id}</p>
                         <Suspense fallback={<div></div>}>
                             <BiDown size={50} />
                         </Suspense>
