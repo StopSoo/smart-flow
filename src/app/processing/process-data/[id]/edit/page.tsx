@@ -24,6 +24,7 @@ export default function ProcessDataDetailPage() {
         <Layout headerTitle="데이터 가공">
             <div className="w-full flex flex-col">
                 <SemiHeader headerTitle="이미지 편집" />
+
                 <div className="flex flex-col p-6 gap-12">
                     <EditImage onDataChange={handleDataChange} />
                     <div className="flex flex-row w-full gap-6">

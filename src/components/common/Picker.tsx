@@ -9,6 +9,7 @@ interface PickerProps {
     value: string;
     title: string;
     type: "date" | "select";
+    className?: string;
     onChange: (value: string) => void;
     options?: PickerOption[];
 }
@@ -17,7 +18,7 @@ const BiDown = lazy(() => import('react-icons/bi').then(module => ({
     default: module.BiChevronDown
 })));
 
-export function Picker({ value, title, type, onChange, options = [] }: PickerProps) {
+export function Picker({ value, title, type, className = "", onChange, options = [] }: PickerProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -62,14 +63,16 @@ export function Picker({ value, title, type, onChange, options = [] }: PickerPro
     return (
         <div
             ref={dropdownRef}
-            className={`relative ${title ? "min-w-[160px]" : "min-w-[100px]"} border-[2px] border-light-gray rounded-xl p-2 bg-white flex flex-col justify-center items-start cursor-pointer ${title ? "h-14" : "h-12"}`}
+            className={`relative ${title ? "min-w-[160px]" : "min-w-[100px]"} border-[2px] border-light-gray rounded-xl p-2 bg-white flex flex-col justify-center items-start cursor-pointer ${title ? "h-14" : "h-12"} ${className}`}
             onClick={handleClick}
         >
-            {title && (
-                <label className="text-md text-point-blue font-bold mb-1">
-                    {title}
-                </label>
-            )}
+            {
+                title && (
+                    <label className="text-md text-point-blue font-bold mb-1">
+                        {title}
+                    </label>
+                )
+            }
 
             <div className="relative w-full" ref={dropdownRef}>
                 {

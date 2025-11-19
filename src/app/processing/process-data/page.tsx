@@ -15,8 +15,9 @@ const HiArrowUp = lazy(() => import('react-icons/hi').then(module => ({
 const HiArrowDown = lazy(() => import('react-icons/hi').then(module => ({
     default: module.HiArrowDown
 })));
-
-const MOCK_DATA: ProcessDataItem[] = [
+// 목데이터
+// TODO: API 연동 시 변경 
+export const MOCK_DATA: ProcessDataItem[] = [
     {
         id: 1,
         productionDate: "2025.11.13\n14:40:25",

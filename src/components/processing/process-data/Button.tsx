@@ -16,8 +16,8 @@ export default function Button({ type, title, disabled, className = "", onClick,
                     : type === "simple"
                         ? "w-12 h-12 flex items-center justify-center bg-medium-gray text-white text-2xl font-bold rounded hover:bg-medium-gray/80 disabled:bg-light-gray disabled:cursor-not-allowed"
                         : disabled
-                            ? "bg-light-gray text-white"
-                            : "bg-white text-medium-gray border-2 border-medium-gray hover:bg-soft-white cursor-pointer"
+                            ? "h-[56px] bg-light-gray text-white"
+                            : "h-[56px] bg-white text-medium-gray border-2 border-medium-gray hover:bg-soft-white cursor-pointer"
                 } 
                 rounded font-bold shadow-md ${className}`
             }

@@ -92,20 +92,20 @@ export default function EditImage({ onDataChange }: EditImageProps) {
 
     const [maskPoly, setMaskPoly] = useState<number[][][]>(INITIAL_MASK_POLY);
     const [editedPoints, setEditedPoints] = useState<Set<string>>(new Set());
-    const [isDragging, setIsDragging] = useState(false);
+    const [isDragging, setIsDragging] = useState(false); // 드래그 여부
     const [draggedPoint, setDraggedPoint] = useState<Point | null>(null);
     const [isImageLoaded, setIsImageLoaded] = useState(false);
-    const [scale, setScale] = useState(1);
-    const [offset, setOffset] = useState({ x: 0, y: 0 });
-    const [isPanning, setIsPanning] = useState(false);
-    const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+    const [scale, setScale] = useState(1); // zoom level
+    const [offset, setOffset] = useState({ x: 0, y: 0 }); // 이미지 상의 중심 좌표
+    const [isPanning, setIsPanning] = useState(false); // 사용자가 위치 변경 중인지의 여부
+    const [panStart, setPanStart] = useState({ x: 0, y: 0 }); // 드래그 시작점을 기준으로 화면 이동 계산 시 사용되는 좌표 정보
 
-    const POINT_RADIUS = 4;
+    const POINT_RADIUS = 5;
     const POINT_COLOR = "#00B71B";
     const EDITED_POINT_COLOR = "#C8000B";
     const POINT_HIT_RADIUS = 8;
     const MIN_SCALE = 0.6; // 60%까지 축소 가능
-    const MAX_SCALE = 5; // 500%까지 확대 가능
+    const MAX_SCALE = 6; // 600%까지 확대 가능
     const ZOOM_STEP = 0.2; // 20% 간격으로 축소/확대
 
     useEffect(() => {
@@ -248,6 +248,7 @@ export default function EditImage({ onDataChange }: EditImageProps) {
     };
 
     const findPointAtPosition = (x: number, y: number): Point | null => {
+        // 폴리곤 좌표를 화면 상의 좌표로 변환하는 함수
         const { x: imgX, y: imgY } = screenToImageCoords(x, y);
 
         for (let polygonIndex = 0; polygonIndex < maskPoly.length; polygonIndex++) {
@@ -325,6 +326,7 @@ export default function EditImage({ onDataChange }: EditImageProps) {
     };
 
     const handleMouseUp = () => {
+        // 마우스를 뗐을 때 실행되는 함수
         if (isDragging && draggedPoint) {
             const pointKey = `${draggedPoint.polygonIndex}-${draggedPoint.pointIndex}`;
             setEditedPoints(prev => new Set(prev).add(pointKey));
@@ -335,6 +337,7 @@ export default function EditImage({ onDataChange }: EditImageProps) {
     };
 
     const handleMouseLeave = () => {
+        // 마우스가 캔버스 밖으로 나갔을 때
         if (isDragging) {
             handleMouseUp();
         }
@@ -342,7 +345,7 @@ export default function EditImage({ onDataChange }: EditImageProps) {
     };
 
     const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
-        e.preventDefault();
+        // e.preventDefault();
         e.stopPropagation();
         const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
         const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale + delta));
@@ -454,7 +457,7 @@ export default function EditImage({ onDataChange }: EditImageProps) {
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseLeave}
                     onWheel={handleWheel}
-                    className={isPanning ? "cursor-grabbing" : "cursor-crosshair"}
+                    className={isPanning || isDragging ? "cursor-grabbing" : "cursor-crosshair"}
                 />
             </div>
         </div>

@@ -31,8 +31,8 @@ export default function MenuBar() {
                             />
                             <Button
                                 title="인공지능 분석"
-                                isActive={isActive('/analysis/result')}
-                                disabled={isActive('/analysis/result')}
+                                isActive={isSelectedPlatform('/analysis/result')}
+                                disabled={isSelectedPlatform('/analysis/result')}
                                 onClick={() => router.push('/analysis/result')}
                             />
                         </div>
@@ -50,8 +50,8 @@ export default function MenuBar() {
                             />
                             <Button
                                 title="데이터 가공"
-                                isActive={isActive('/processing/process-data')}
-                                disabled={isActive('/processing/process-data')}
+                                isActive={isSelectedPlatform('/processing/process-data')}
+                                disabled={isSelectedPlatform('/processing/process-data')}
                                 onClick={() => router.push('/processing/process-data')}
                             />
                         </div>
@@ -63,20 +63,20 @@ export default function MenuBar() {
                         <div className="flex flex-col gap-[18px]">
                             <Button
                                 title="인공지능 학습"
-                                isActive={isActive('/learning/progress')}
-                                disabled={isActive('/learning/progress')}
+                                isActive={isSelectedPlatform('/learning/progress')}
+                                disabled={isSelectedPlatform('/learning/progress')}
                                 onClick={() => router.push('/learning/progress')}
                             />
                             <Button
                                 title="인공지능 모델"
-                                isActive={isActive('/learning/models')}
-                                disabled={isActive('/learning/models')}
+                                isActive={isSelectedPlatform('/learning/models')}
+                                disabled={isSelectedPlatform('/learning/models')}
                                 onClick={() => router.push('/learning/models')}
                             />
                             <Button
                                 title="인공지능 모델"
-                                isActive={isActive('/learning/management')}
-                                disabled={isActive('/learning/management')}
+                                isActive={isSelectedPlatform('/learning/management')}
+                                disabled={isSelectedPlatform('/learning/management')}
                                 onClick={() => router.push('/learning/management')}
                             />
                         </div>
