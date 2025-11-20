@@ -58,7 +58,7 @@ export function DailyRollCostChart({ data }: { data: DailyRollCostPoint[] }) {
 
             <div className="flex justify-center gap-4 mt-4 text-sm">
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-point-green/80" />
+                    <div className="w-3 h-3 bg-point-blue/80" />
                     <span>양품</span>
                 </div>
                 <div className="flex items-center gap-2">

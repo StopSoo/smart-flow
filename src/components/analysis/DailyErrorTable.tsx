@@ -5,10 +5,9 @@ import Pagination from "../common/Pagination";
 import { MOCK_DATA } from "@/app/processing/process-data/page";
 
 export default function DailyErrorTable() {
-    const [itemsPerPage, setItemsPerPage] = useState<string>('1');
+    const [itemsPerPage, setItemsPerPage] = useState<string>('3');
     const [currentPage, setCurrentPage] = useState(1);
     const [currentTab, setCurrentTab] = useState(1);
-    const [sortConfig, setSortConfig] = useState<string>('desc');
 
     return (
         <div className="border-[4px] border-light-gray p-6 bg-white">
@@ -64,8 +63,7 @@ export default function DailyErrorTable() {
                 <Pagination
                     total={MOCK_DATA.length}
                     page={currentPage}
-                    // limit={Number(itemsPerPage)}
-                    limit={1}
+                    limit={Number(itemsPerPage)}
                     tab={currentTab}
                     setPage={setCurrentPage}
                     setTab={setCurrentTab}

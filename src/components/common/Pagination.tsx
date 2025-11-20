@@ -22,10 +22,6 @@ export default function Pagination({
     const pageNum = Math.ceil(total / limit);
     const tabNum = Math.ceil(total / (limit * 10));
 
-    useEffect(() => {
-        console.log(page, tab);
-    }, [page, tab]);
-
     return (
         <section className="mt-3">
             <div className="flex justify-center gap-x-2">
@@ -58,7 +54,7 @@ export default function Pagination({
                 </button>
 
                 {
-                    Array(pageNum).splice((tab - 1) * limit + 1, 10)
+                    Array(pageNum).splice((tab - 1) * limit, 10)
                         .fill(0)
                         .map((_, i) => (
                             <button
