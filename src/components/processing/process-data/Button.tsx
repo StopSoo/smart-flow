@@ -1,5 +1,5 @@
 interface ButtonProps {
-    type: "selectAll" | "simple" | "default";
+    type: "selectAll" | "simple" | "default" | "warning" | "danger";
     title: string;
     disabled?: boolean;
     className?: string;
@@ -17,8 +17,12 @@ export default function Button({ type, title, disabled, className = "", onClick,
                         ? "bg-point-blue text-white border-none hover:bg-point-blue/80 cursor-pointer"
                         : type === "simple"
                             ? "w-12 h-12 flex items-center justify-center bg-medium-gray text-white text-2xl font-bold rounded hover:bg-medium-gray/80 disabled:bg-light-gray disabled:cursor-not-allowed"
-                            : "bg-white text-medium-gray border-2 border-medium-gray hover:bg-soft-white cursor-pointer"
-                } 
+                            : type === "warning"
+                                ? "bg-yellow-500 text-white border-none hover:bg-yellow-600 cursor-pointer"
+                                : type === "danger"
+                                    ? "bg-point-red text-white border-none hover:bg-point-red/80 cursor-pointer"
+                                    : "bg-white text-medium-gray border-2 border-medium-gray hover:bg-soft-white cursor-pointer"
+                }
                 rounded font-bold shadow-md ${className}`
             }
             onClick={onClick}

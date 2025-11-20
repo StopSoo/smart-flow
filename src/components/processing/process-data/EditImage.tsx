@@ -85,6 +85,11 @@ interface EditImageProps {
     onDataChange?: (data: number[][][]) => void;
 }
 
+interface HistoryState {
+    maskPoly: number[][][];
+    editedPoints: Set<string>;
+}
+
 export default function EditImage({ onDataChange }: EditImageProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -99,11 +104,13 @@ export default function EditImage({ onDataChange }: EditImageProps) {
     const [offset, setOffset] = useState({ x: 0, y: 0 }); // 이미지 상의 중심 좌표
     const [isPanning, setIsPanning] = useState(false); // 사용자가 위치 변경 중인지의 여부
     const [panStart, setPanStart] = useState({ x: 0, y: 0 }); // 드래그 시작점을 기준으로 화면 이동 계산 시 사용되는 좌표 정보
-    const [areaSet, setAreaSet] = useState<CanvasRenderingContext2D[]>([]); // 인식된 영역들의 집합
+    const [history, setHistory] = useState<HistoryState[]>([]); // 실행 취소를 위한 작업 기록
+    const [selectedPolygonIndex, setSelectedPolygonIndex] = useState<number | null>(null); // 선택된 영역(폴리곤) 인덱스
 
     const POINT_RADIUS = 8;
     const POINT_COLOR = "#00B71B";
     const EDITED_POINT_COLOR = "#C8000B";
+    const SELECTED_POLYGON_COLOR = "#0066FF"; // 선택된 영역 색상
     const POINT_HIT_RADIUS = 8;
     const MIN_SCALE = 0.6; // 60%까지 축소 가능
     const MAX_SCALE = 6; // 600%까지 확대 가능
@@ -136,7 +143,7 @@ export default function EditImage({ onDataChange }: EditImageProps) {
         canvas.height = container.clientHeight;
 
         drawCanvas(ctx, image);
-    }, [isImageLoaded, maskPoly, editedPoints, scale, offset]);
+    }, [isImageLoaded, maskPoly, editedPoints, scale, offset, selectedPolygonIndex]);
 
     useEffect(() => {
         if (onDataChange) {
@@ -177,6 +184,9 @@ export default function EditImage({ onDataChange }: EditImageProps) {
         ctx.drawImage(image, imgX, imgY);
 
         maskPoly.forEach((polygon, polygonIndex) => {
+            const isSelected = selectedPolygonIndex === polygonIndex;
+            const polygonColor = isSelected ? SELECTED_POLYGON_COLOR : POINT_COLOR;
+
             if (polygon.length > 0) {
                 ctx.beginPath();
                 ctx.moveTo(imgX + polygon[0][0], imgY + polygon[0][1]);
@@ -186,14 +196,13 @@ export default function EditImage({ onDataChange }: EditImageProps) {
                 }
 
                 ctx.closePath();
-                ctx.strokeStyle = POINT_COLOR;
-                ctx.lineWidth = 2 / scale;
+                ctx.strokeStyle = polygonColor;
+                ctx.lineWidth = isSelected ? 4 / scale : 2 / scale; // 선택된 영역은 더 두꺼운 선
                 ctx.stroke();
                 // 영역 색칠
-                ctx.fillStyle = `${POINT_COLOR}60`;
+                ctx.fillStyle = `${polygonColor}60`;
                 ctx.fill();
             }
-            // setAreaSet([...areaSet, ctx]);
 
             polygon.forEach((point, pointIndex) => {
                 const [x, y] = point;
@@ -202,7 +211,8 @@ export default function EditImage({ onDataChange }: EditImageProps) {
 
                 ctx.beginPath();
                 ctx.arc(imgX + x, imgY + y, POINT_RADIUS / scale, 0, Math.PI * 2);
-                ctx.fillStyle = isEdited ? EDITED_POINT_COLOR : POINT_COLOR;
+                // 선택된 영역의 점들도 선택 색상으로 표시
+                ctx.fillStyle = isSelected ? SELECTED_POLYGON_COLOR : (isEdited ? EDITED_POINT_COLOR : POINT_COLOR);
                 ctx.fill();
                 ctx.strokeStyle = "#FFFFFF";
                 ctx.lineWidth = 1 / scale;
@@ -210,7 +220,6 @@ export default function EditImage({ onDataChange }: EditImageProps) {
             });
 
         });
-        // console.log(areaSet)
 
         const centerX = imgX + image.width / 2;
         const centerY = imgY + image.height / 2;
@@ -285,10 +294,19 @@ export default function EditImage({ onDataChange }: EditImageProps) {
             return;
         }
 
+        const { x: imgX, y: imgY } = screenToImageCoords(x, y);
         const point = findPointAtPosition(x, y);
+        if (e.altKey && !point) {
+            // Alt + 클릭 -> 영역 선택
+            const polygonIndex = findPolygonAtPosition(imgX, imgY);
+            setSelectedPolygonIndex(polygonIndex);
+            return;
+        }
+
         if (point) {
             if (e.ctrlKey) {
                 // 점 hover + ctrl key 클릭 -> 선택한 점 삭제
+                saveToHistory();
                 if (editedPoints.has(`${point.polygonIndex}-${point.pointIndex}`)) {
                     editedPoints.delete(`${point.polygonIndex}-${point.pointIndex}`);
                 }
@@ -301,6 +319,37 @@ export default function EditImage({ onDataChange }: EditImageProps) {
             } else {
                 setIsDragging(true);
                 setDraggedPoint(point);
+            }
+        } else {
+            // 점이 아닌 곳을 클릭 -> 새로운 점 추가
+            const polygonIndex = findPolygonAtPosition(imgX, imgY);
+            if (polygonIndex !== null) {
+                saveToHistory();
+                const { edgeIndex, point: newPoint } = findNearestEdge(imgX, imgY, polygonIndex);
+
+                setMaskPoly(prev => prev.map((polygon, pIndex) => {
+                    if (pIndex === polygonIndex) {
+                        const newPolygon = [...polygon];
+                        newPolygon.splice(edgeIndex + 1, 0, newPoint);
+                        return newPolygon;
+                    }
+                    return polygon;
+                }));
+                // 새로 추가된 점을 편집된 점으로 표시
+                const newPointKey = `${polygonIndex}-${edgeIndex + 1}`;
+                setEditedPoints(prev => {
+                    const newSet = new Set(prev);
+                    // 추가된 점 이후의 점들 인덱스 조정
+                    prev.forEach(key => {
+                        const [polyIdx, pointIdx] = key.split('-').map(Number);
+                        if (polyIdx === polygonIndex && pointIdx > edgeIndex) {
+                            newSet.delete(key);
+                            newSet.add(`${polyIdx}-${pointIdx + 1}`);
+                        }
+                    });
+                    newSet.add(newPointKey);
+                    return newSet;
+                });
             }
         }
     };
@@ -346,6 +395,7 @@ export default function EditImage({ onDataChange }: EditImageProps) {
     const handleMouseUp = () => {
         // 마우스를 뗐을 때 실행되는 함수
         if (isDragging && draggedPoint) {
+            saveToHistory();
             const pointKey = `${draggedPoint.polygonIndex}-${draggedPoint.pointIndex}`;
             console.log(pointKey);
             setEditedPoints(prev => new Set(prev).add(pointKey));
@@ -408,6 +458,122 @@ export default function EditImage({ onDataChange }: EditImageProps) {
     const handleMoveToCenter = () => {
         setOffset({ x: 0, y: offset.y });
     };
+    // 히스토리에 현재 상태 저장
+    const saveToHistory = () => {
+        setHistory(prev => [...prev, {
+            maskPoly: JSON.parse(JSON.stringify(maskPoly)),
+            editedPoints: new Set(editedPoints)
+        }]);
+    };
+    // 점이 폴리곤 내부에 있는지 확인 (Ray Casting Algorithm)
+    const isPointInPolygon = (x: number, y: number, polygon: number[][]): boolean => {
+        let inside = false;
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            const xi = polygon[i][0], yi = polygon[i][1];
+            const xj = polygon[j][0], yj = polygon[j][1];
+
+            const intersect = ((yi > y) !== (yj > y))
+                && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    };
+    // 클릭한 위치가 어느 폴리곤 내부인지 찾기
+    const findPolygonAtPosition = (imgX: number, imgY: number): number | null => {
+        for (let i = 0; i < maskPoly.length; i++) {
+            if (isPointInPolygon(imgX, imgY, maskPoly[i])) {
+                return i;
+            }
+        }
+        return null;
+    };
+    // 가장 가까운 폴리곤 엣지 찾기
+    const findNearestEdge = (imgX: number, imgY: number, polygonIndex: number) => {
+        const polygon = maskPoly[polygonIndex];
+        let minDist = Infinity;
+        let nearestEdgeIndex = 0;
+        let insertPoint: [number, number] = [imgX, imgY];
+
+        for (let i = 0; i < polygon.length; i++) {
+            const p1 = polygon[i];
+            const p2 = polygon[(i + 1) % polygon.length];
+            // 선분과 점 사이의 최단 거리 계산
+            const A = imgX - p1[0];
+            const B = imgY - p1[1];
+            const C = p2[0] - p1[0];
+            const D = p2[1] - p1[1];
+
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+            let param = -1;
+            if (lenSq !== 0) param = dot / lenSq;
+
+            let xx, yy;
+
+            if (param < 0) {
+                xx = p1[0];
+                yy = p1[1];
+            } else if (param > 1) {
+                xx = p2[0];
+                yy = p2[1];
+            } else {
+                xx = p1[0] + param * C;
+                yy = p1[1] + param * D;
+            }
+
+            const dist = Math.sqrt((imgX - xx) ** 2 + (imgY - yy) ** 2);
+            if (dist < minDist) {
+                minDist = dist;
+                nearestEdgeIndex = i;
+                insertPoint = [Math.round(xx), Math.round(yy)];
+            }
+        }
+
+        return { edgeIndex: nearestEdgeIndex, point: insertPoint };
+    };
+
+    const handleUndo = () => {
+        if (history.length === 0) return;
+
+        const lastState = history[history.length - 1];
+        setMaskPoly(lastState.maskPoly);
+        setEditedPoints(lastState.editedPoints);
+        setHistory(prev => prev.slice(0, -1));
+        setSelectedPolygonIndex(null);
+    };
+
+    const handleCancelAll = () => {
+        setMaskPoly(INITIAL_MASK_POLY);
+        setEditedPoints(new Set());
+        setHistory([]);
+        setSelectedPolygonIndex(null);
+    };
+
+    const handleDeleteSelectedPolygon = () => {
+        if (selectedPolygonIndex === null) return;
+
+        saveToHistory();
+        setMaskPoly(prev => prev.filter((_, idx) => idx !== selectedPolygonIndex));
+        // 삭제된 폴리곤의 점들을 editedPoints에서 제거
+        const newEditedPoints = new Set(editedPoints);
+        editedPoints.forEach(key => {
+            const [polyIdx] = key.split('-').map(Number);
+            if (polyIdx === selectedPolygonIndex) {
+                newEditedPoints.delete(key);
+            } else if (polyIdx > selectedPolygonIndex) {
+                const [, pointIdx] = key.split('-').map(Number);
+                newEditedPoints.delete(key);
+                newEditedPoints.add(`${polyIdx - 1}-${pointIdx}`);
+            }
+        });
+        setEditedPoints(newEditedPoints);
+        setSelectedPolygonIndex(null);
+    };
+
+    // 썸네일 클릭 핸들러
+    const handleThumbnailClick = (index: number) => {
+        setSelectedPolygonIndex(index === selectedPolygonIndex ? null : index);
+    };
 
     return (
         <div className="flex flex-col gap-4">
@@ -436,9 +602,24 @@ export default function EditImage({ onDataChange }: EditImageProps) {
                         disabled={false}
                         onClick={handleResetZoom}
                     />
+                    <div className="h-8 w-[1px] bg-medium-gray mx-2" />
+                    <Button
+                        type="default"
+                        title="취소"
+                        disabled={history.length === 0}
+                        onClick={handleUndo}
+                        className="w-[64px]"
+                    />
+                    <Button
+                        type="warning"
+                        title="전체 취소"
+                        disabled={false}
+                        onClick={handleCancelAll}
+                    />
                     <span className="text-base text-medium-gray ml-4">
-                        <p>Shift + 드래그 또는 마우스 휠로 확대/축소</p>
-                        <p>Ctrl + 점 클릭 시 삭제</p>
+                        <p>클릭: 점 추가 | 드래그: 점 이동</p>
+                        <p>Shift + 드래그: 화면 이동 | 마우스 휠: 확대/축소</p>
+                        <p>Ctrl + 점 클릭: 점 삭제 | Alt + 클릭: 영역 선택</p>
                     </span>
                 </div>
 
@@ -488,10 +669,43 @@ export default function EditImage({ onDataChange }: EditImageProps) {
                     />
                 </div>
 
-                <div className="h-[250px] border-[4px] border-light-gray flex flex-col items-center">
-                    {
-                        // TODO: 영역 띄우기 
-                    }
+                <div className="border-[4px] border-light-gray bg-white p-6 flex flex-col gap-4">
+                    <div className="flex items-center justify-between h-[56px]">
+                        <h3 className="text-xl font-bold text-black">영역 목록</h3>
+                        {
+                            selectedPolygonIndex !== null && (
+                                <Button
+                                    type="danger"
+                                    title="선택된 영역 삭제"
+                                    disabled={false}
+                                    onClick={handleDeleteSelectedPolygon}
+                                />
+                            )
+                        }
+                    </div>
+
+                    <div className="flex flex-wrap gap-4">
+                        {
+                            maskPoly.map((_, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => handleThumbnailClick(index)}
+                                    className={`w-[150px] h-[40px] relative cursor-pointer rounded-lg overflow-hidden transition-all ${selectedPolygonIndex === index
+                                        ? 'ring-4 ring-blue-500 shadow-lg'
+                                        : 'ring-2 ring-gray-300 hover:ring-gray-400 hover:shadow-md'
+                                        }`}
+                                >
+                                    <div
+                                        className={`w-full h-full flex items-center justify-center px-2 py-1 text-md font-bold ${selectedPolygonIndex === index
+                                            ? 'bg-blue-500 text-white'
+                                            : 'bg-gray-700 text-white'
+                                            }`}
+                                    >
+                                        영역 {index + 1}
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
                 </div>
             </div>
         </div>
