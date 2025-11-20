@@ -1,3 +1,5 @@
+'use client';
+
 import type { ProductionLineStatus } from "@/types/processing/types";
 import Button from "../process-data/Button";
 import { useState } from "react";

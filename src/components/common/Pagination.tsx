@@ -25,9 +25,9 @@ export default function Pagination({
                         setPage(page - 1);
                     }}
                     disabled={page === 1}
-                    className='flex items-center justify-center w-10 h-10 border-2 border-light-gray cursor-pointer'
+                    className={`flex items-center justify-center w-10 h-10 border-2 border-light-gray cursor-pointer ${page === 1 && "bg-light-gray"}`}
                 >
-                    <SlArrowLeft size={20} className='text-point-blue' />
+                    <SlArrowLeft size={20} className={`${page === 1 ? "text-white cursor-auto" : "text-point-blue"}`} />
                 </button>
 
                 {
@@ -58,9 +58,9 @@ export default function Pagination({
                         setPage(page + 1);
                     }}
                     disabled={page === pageNum}
-                    className='flex items-center justify-center w-10 h-10 border-2 border-light-gray cursor-pointer'
+                    className={`flex items-center justify-center w-10 h-10 border-2 border-light-gray cursor-pointer ${page === pageNum && "bg-light-gray"}`}
                 >
-                    <SlArrowRight size={20} className='text-point-blue' />
+                    <SlArrowRight size={20} className={`${page === pageNum ? "text-white cursor-auto" : "text-point-blue"}`} />
                 </button>
             </div>
         </section>

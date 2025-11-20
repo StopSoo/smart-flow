@@ -52,16 +52,16 @@ export function InspectionChart({
                 <div className="flex flex-col ml-2 items-center h-[250px] justify-end">
                   <motion.div
                     className="w-8 bg-point-green/80"
-                    style={{ height: `${(item.inspected / maxValue) * 100}%` }}
+                    style={{ height: `${(item.inspected / maxValue) * 50}%` }}
                     initial={{ height: 0 }}
-                    animate={{ height: `${(item.inspected / maxValue) * 100}%` }}
+                    animate={{ height: `${(item.inspected / maxValue) * 50}%` }}
                     transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.05 }}
                   />
                   <motion.div
                     className="w-8 bg-point-blue/70"
-                    style={{ height: `${(item.uninspected / maxValue) * 100}%` }}
+                    style={{ height: `${(item.uninspected / maxValue) * 50}%` }}
                     initial={{ height: 0 }}
-                    animate={{ height: `${(item.uninspected / maxValue) * 100}%` }}
+                    animate={{ height: `${(item.uninspected / maxValue) * 50}%` }}
                     transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.05 }}
                   />
                 </div>
