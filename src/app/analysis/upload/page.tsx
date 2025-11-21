@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Layout from "@/components/layout/Layout";
 import { Picker } from "@/components/common/Picker";
@@ -13,33 +13,54 @@ export default function UploadPage() {
     const [selectedItem, setSelectedItem] = useState('선택해주세요');
     const [isUploading, setIsUploading] = useState(false);
     const [modalType, setModalType] = useState<ModalType>(null);
+    const [isNotify, setIsNotify] = useState<boolean>(false); // 경고 여부
     const [uploadData, setUploadData] = useState<UploadData[]>([
         // 목데이터
         // TODO: API 연결 시 변경
         {
             uploadDate: '2025.11.13 14:40:25',
             inspectionItem: 'contactpin_1',
-            inspectionData: '1건\n20251113_001_001_01250.png'
+            inspectionData: {
+                count: 1,
+                name: '20251113_001_001_01250.png'
+            },
+            isFolder: false,
         },
         {
             uploadDate: '2025.11.13 14:40:25',
             inspectionItem: 'contactpin_1',
-            inspectionData: '2,104건\n20251113_001_001_022.png'
+            inspectionData: {
+                count: 2104,
+                name: "20251103 contact pin data",
+            },
+            isFolder: true,
         },
         {
             uploadDate: '2025.11.13 14:40:25',
             inspectionItem: 'contactpin_1',
-            inspectionData: '356건\ntest_data'
+            inspectionData: {
+                count: 356,
+                name: 'test_data'
+            },
+            isFolder: true,
         },
         {
             uploadDate: '2025.11.12 14:40:25',
             inspectionItem: 'contactpin_2',
-            inspectionData: '1건\n20251112_001_001_225.png'
+            inspectionData: {
+                count: 1,
+                name: '20251112_001_001_225.png',
+            },
+            isFolder: false,
         },
         {
             uploadDate: '2025.11.11 14:40:25',
             inspectionItem: 'contactpin_2',
-            inspectionData: '1건\n20251111_001_002_49802.png'
+            inspectionData: {
+                count: 1,
+                name: '20251112_001_002_333.png',
+            },
+            isFolder: false,
         }
     ]);
     // 업로드할 이미지의 검사 항목
@@ -49,25 +70,27 @@ export default function UploadPage() {
         { label: 'contactpin_2', value: 'contactpin_2' }
     ];
 
-    const handleUpload = async (files: File[]) => {
+    const handleUpload = async (files: File[], folderName: string) => {
         if (selectedItem === '선택해주세요') {
             setModalType('error-format');
             return;
         }
-        console.log(files);
         setIsUploading(true);
 
         await new Promise(resolve => setTimeout(resolve, 2000));
-
         const now = new Date();
         const dateString = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
         const newData: UploadData = {
             uploadDate: dateString,
             inspectionItem: selectedItem,
-            inspectionData: files.length > 1
-                ? `${files.length}건\n${files[0].name}`
-                : `1건\n${files[0].name}`
+            inspectionData: {
+                count: files.length,
+                name: folderName !== ''
+                    ? folderName
+                    : files[0].name
+            },
+            isFolder: folderName !== '' ? true : false
         };
 
         setUploadData(prev => [newData, ...prev]);
@@ -83,6 +106,12 @@ export default function UploadPage() {
         setModalType(null);
     };
 
+    useEffect(() => {
+        if (selectedItem) {
+            setIsNotify(false);
+        }
+    }, [selectedItem]);
+
     return (
         <Layout headerTitle="데이터 업로드">
             <div className="flex-1 flex flex-col p-6 gap-6">
@@ -95,6 +124,7 @@ export default function UploadPage() {
                         type="select"
                         onChange={setSelectedItem}
                         options={inspectionOptions}
+                        borderColor={`${isNotify ? "point-red" : ""}`}
                         className="w-[240px]"
                     />
 
@@ -108,6 +138,7 @@ export default function UploadPage() {
                     isUploading={isUploading}
                     onUpload={handleUpload}
                     onShowModal={handleShowModal}
+                    onWarning={setIsNotify}
                 />
 
                 <UploadDataTable data={uploadData} />

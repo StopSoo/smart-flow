@@ -1,6 +1,8 @@
+import { useState, useMemo } from "react";
+
 import { UploadData } from "@/types/analysis/upload";
 import Pagination from "@/components/common/Pagination";
-import { useState, useMemo } from "react";
+import { BsFillFolderFill, BsImages } from "react-icons/bs";
 
 interface UploadDataTableProps {
     data: UploadData[];
@@ -57,8 +59,14 @@ export default function UploadDataTable({ data }: UploadDataTableProps) {
                                         <td className="py-4 px-4">
                                             {item.inspectionItem}
                                         </td>
-                                        <td className="py-4 px-4 whitespace-pre-line">
-                                            {item.inspectionData}
+                                        <td className="flex flex-col items-center py-4 px-4 whitespace-pre-line">
+                                            <p>{item.inspectionData.count}건</p>
+                                            <div className="flex flex-row gap-2 items-center">
+                                                {
+                                                    item.isFolder ? <BsFillFolderFill /> : <BsImages />
+                                                }
+                                                <p>{item.inspectionData.name}</p>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

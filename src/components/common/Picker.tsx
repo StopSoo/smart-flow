@@ -9,6 +9,7 @@ interface PickerProps {
     value: string;
     title: string;
     type: "date" | "select";
+    borderColor?: string;
     className?: string;
     onChange: (value: string) => void;
     options?: PickerOption[];
@@ -18,7 +19,7 @@ const BiDown = lazy(() => import('react-icons/bi').then(module => ({
     default: module.BiChevronDown
 })));
 
-export function Picker({ value, title, type, className = "", onChange, options = [] }: PickerProps) {
+export function Picker({ value, title, type, borderColor = "light-gray", className = "", onChange, options = [] }: PickerProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -63,7 +64,7 @@ export function Picker({ value, title, type, className = "", onChange, options =
     return (
         <div
             ref={dropdownRef}
-            className={`relative ${title ? "min-w-[160px]" : "min-w-[100px]"} border-[2px] border-light-gray rounded-xl p-2 bg-white flex flex-col justify-center items-start cursor-pointer h-[56px] ${className}`}
+            className={`relative ${title ? "min-w-[160px]" : "min-w-[100px]"} border-[2px] border-${borderColor} rounded-xl p-2 bg-white flex flex-col justify-center items-start cursor-pointer h-[56px] ${className}`}
             onClick={handleClick}
         >
             {
