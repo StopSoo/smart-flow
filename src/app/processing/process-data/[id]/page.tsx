@@ -10,14 +10,14 @@ import HistogramChart from "@/components/processing/process-data/HistogramChart"
 import { Picker } from "@/components/common/Picker";
 import Pagination from "@/components/common/Pagination";
 import MultipleButton from "@/components/common/MultipleButton";
-import { ProcessDataItem } from "@/types/processing/process-data";
 import { MOCK_DATA } from "@/mock/processing/mock";
+import { ProductionHistoryItem } from "@/types/common/types";
 
 export default function ProcessDataDetailPage() {
   const params = useParams();
   const id = params.id;
   const router = useRouter();
-  const [data, setData] = useState<ProcessDataItem>();
+  const [data, setData] = useState<ProductionHistoryItem>();
   const [bitmapOn, setBitmapOn] = useState<boolean>(false);
   const [selectedImageNumber, setSelectedImageNumber] = useState<number>();
   const [itemsPerPage, setItemsPerPage] = useState<string>('10');
@@ -198,7 +198,7 @@ export default function ProcessDataDetailPage() {
               <h2 className="text-lg text-black">생산라인</h2>
             </div>
             <div className="flex flex-row items-center justify-center w-full gap-3 px-4 py-4 font-bold">
-              <p>{data?.production_line}</p>
+              <p>{data?.production_line.name}</p>
             </div>
           </div>
 

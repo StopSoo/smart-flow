@@ -275,7 +275,7 @@ export default function ProcessDataPage() {
                       {item.created_at}
                     </td>
                     <td className="px-4 py-3 whitespace-pre-line">
-                      {item.production_line}
+                      {item.production_line.name}
                     </td>
                     <td className="px-4 py-3">{item.mold_no}</td>
                     <td className="px-4 py-3">
@@ -285,14 +285,13 @@ export default function ProcessDataPage() {
                     </td>
                     {/* TODO: API 명세 보고 해야 함 */}
                     <td
-                    // className={`px-4 py-3 font-bold ${
-                    //   item.inspectionResult === "불량" ? "text-point-red" : ""
-                    // }`}
+                      className={`px-4 py-3 font-bold ${item.is_abnormal ? "text-point-red" : ""
+                        }`}
                     >
-                      {/* {item.inspectionResult} */}
+                      {item.is_abnormal ? "불량" : "정상"}
                     </td>
                     <td className="px-4 py-3">
-                      {/* {item.aiModel} */}
+                      {item.applied_model === null ? "" : item.applied_model}
                     </td>
                   </tr>
                 ))

@@ -251,64 +251,66 @@ export default function ResultPage() {
             </thead>
 
             <tbody>
-              {MOCK_DATA.length !== 0 ? (
-                MOCK_DATA.slice(
-                  (currentPage - 1) * Number(itemsPerPage),
-                  currentPage * Number(itemsPerPage)
-                ).map((item) => (
-                  <tr
-                    key={item.id}
-                    className="text-base border-b border-light-gray text-center hover:bg-light-gray/30 cursor-pointer"
-                    onClick={() =>
-                      router.push(`/processing/process-data/${item.id}`)
-                    }
-                  >
-                    <td className="p-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        onChange={() => handleToggleItem(item.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="w-8 h-8 cursor-pointer accent-point-blue"
-                      />
-                    </td>
-                    <td className="px-4 py-3">{item.id}</td>
-                    <td className="px-4 py-3 whitespace-pre-line">
-                      {item.created_at}
-                    </td>
-                    <td className="px-4 py-3 whitespace-pre-line">
-                      {item.production_line}
-                    </td>
-                    <td className="px-4 py-3">{item.mold_no}</td>
-                    <td className="px-4 py-3">
-                      {item.defect_rate}%<br />(
-                      {item.defective_count}/
-                      {item.defective_count + item.normal_count})
-                    </td>
-                    {/* TODO: API 명세 보고 해야 함 */}
-                    <td
-                    // className={`px-4 py-3 font-bold ${item.inspectionResult === "불량"
-                    //   ? "text-point-red"
-                    //   : ""
-                    //   }`}
+              {
+                MOCK_DATA.length !== 0 ? (
+                  MOCK_DATA.slice(
+                    (currentPage - 1) * Number(itemsPerPage),
+                    currentPage * Number(itemsPerPage)
+                  ).map((item) => (
+                    <tr
+                      key={item.id}
+                      className="text-base border-b border-light-gray text-center hover:bg-light-gray/30 cursor-pointer"
+                      onClick={() =>
+                        router.push(`/processing/process-data/${item.id}`)
+                      }
                     >
-                      {/* {item.inspectionResult} */}
-                    </td>
-                    <td className="px-4 py-3">
-                      {/* {item.aiModel} */}
+                      <td className="p-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.id)}
+                          onChange={() => handleToggleItem(item.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-8 h-8 cursor-pointer accent-point-blue"
+                        />
+                      </td>
+                      <td className="px-4 py-3">{item.id}</td>
+                      <td className="px-4 py-3 whitespace-pre-line">
+                        {item.created_at}
+                      </td>
+                      <td className="px-4 py-3 whitespace-pre-line">
+                        {item.production_line.name}
+                      </td>
+                      <td className="px-4 py-3">{item.mold_no}</td>
+                      <td className="px-4 py-3">
+                        {item.defect_rate}%<br />(
+                        {item.defective_count}/
+                        {item.defective_count + item.normal_count})
+                      </td>
+                      {/* TODO: API 명세 보고 해야 함 */}
+                      <td
+                        className={`px-4 py-3 font-bold ${item.is_abnormal
+                          ? "text-point-red"
+                          : ""
+                          }`}
+                      >
+                        {item.is_abnormal}
+                      </td>
+                      <td className="px-4 py-3">
+                        {/* {item.aiModel} */}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={8}
+                      className="py-40 text-center font-bold text-lg text-medium-gray"
+                    >
+                      조회되는 생산 데이터가 없습니다.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={8}
-                    className="py-40 text-center font-bold text-lg text-medium-gray"
-                  >
-                    조회되는 생산 데이터가 없습니다.
-                  </td>
-                </tr>
-              )}
+                )
+              }
             </tbody>
           </table>
 
