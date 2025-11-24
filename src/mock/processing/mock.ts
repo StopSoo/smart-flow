@@ -71,7 +71,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.12\n14:40:25",
     },
     {
-        id: 1,
+        id: 5,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_1",
         production_line: {
@@ -88,7 +88,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.13\n14:40:25",
     },
     {
-        id: 2,
+        id: 6,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_1",
         production_line: {
@@ -105,7 +105,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.13\n14:40:25",
     },
     {
-        id: 3,
+        id: 7,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_1",
         production_line: {
@@ -122,7 +122,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.13\n14:40:25",
     },
     {
-        id: 4,
+        id: 8,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_2",
         production_line: {
@@ -139,7 +139,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.12\n14:40:25",
     },
     {
-        id: 1,
+        id: 9,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_1",
         production_line: {
@@ -156,7 +156,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.13\n14:40:25",
     },
     {
-        id: 2,
+        id: 10,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_1",
         production_line: {
@@ -173,7 +173,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.13\n14:40:25",
     },
     {
-        id: 3,
+        id: 11,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_1",
         production_line: {
@@ -190,7 +190,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.13\n14:40:25",
     },
     {
-        id: 4,
+        id: 12,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_2",
         production_line: {
@@ -207,7 +207,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.12\n14:40:25",
     },
     {
-        id: 1,
+        id: 13,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_1",
         production_line: {
@@ -224,7 +224,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.13\n14:40:25",
     },
     {
-        id: 2,
+        id: 14,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_1",
         production_line: {
@@ -241,7 +241,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.13\n14:40:25",
     },
     {
-        id: 3,
+        id: 15,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_1",
         production_line: {
@@ -258,7 +258,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
         created_at: "2025.11.13\n14:40:25",
     },
     {
-        id: 4,
+        id: 16,
         production_name: "APB2909B-KAG-R2-S",
         mold_no: "contactpin_2",
         production_line: {

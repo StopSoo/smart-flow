@@ -217,7 +217,7 @@ export default function ProcessDataPage() {
           />
         </div>
         {/* TODO: 표 컴포넌트화 고려해보기 */}
-        <div className="bg-white border-y-2 border-light-gray overflow-hidden h-[784px]">
+        <div className="bg-white border-y-2 border-light-gray overflow-hidden h-full">
           <table className="w-full">
             <thead className="border-b border-light-gray bg-soft-white py-3 text-center text-lg font-bold text-black">
               <tr>

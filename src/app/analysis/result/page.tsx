@@ -219,7 +219,7 @@ export default function ResultPage() {
           />
         </div>
         {/* TODO: 표 컴포넌트화 고려해보기 */}
-        <div className="bg-white border-y-2 border-light-gray overflow-hidden h-[784px]">
+        <div className="bg-white border-y-2 border-light-gray overflow-hidden h-full">
           <table className="w-full">
             <thead className="border-b border-light-gray bg-soft-white py-3 text-center text-lg font-bold text-black">
               <tr>
@@ -261,7 +261,7 @@ export default function ResultPage() {
                       key={item.id}
                       className="text-base border-b border-light-gray text-center hover:bg-light-gray/30 cursor-pointer"
                       onClick={() =>
-                        router.push(`/processing/process-data/${item.id}`)
+                        router.push(`/analysis/result/${item.id}`)
                       }
                     >
                       <td className="p-4">
@@ -293,10 +293,10 @@ export default function ResultPage() {
                           : ""
                           }`}
                       >
-                        {item.is_abnormal}
+                        {item.is_abnormal ? "불량" : "정상"}
                       </td>
                       <td className="px-4 py-3">
-                        {/* {item.aiModel} */}
+                        {item.applied_model !== "null" ? item.applied_model : ""}
                       </td>
                     </tr>
                   ))
@@ -314,31 +314,33 @@ export default function ResultPage() {
             </tbody>
           </table>
 
-          {isOpenTab && (
-            <div
-              ref={modalRef}
-              className="absolute w-[140px] top-[410px] left-[420px] right-0 mt-1 bg-white border border-light-gray rounded shadow-lg z-50 max-h-60 overflow-y-auto"
-            >
+          {
+            isOpenTab && (
               <div
-                className="flex flex-row gap-6 px-4 py-2 border border-light-gray hover:bg-light-gray/20 cursor-pointer text-sm"
-                onClick={() => handleSort("desc")}
+                ref={modalRef}
+                className="absolute w-[140px] top-[410px] left-[420px] right-0 mt-1 bg-white border border-light-gray rounded shadow-lg z-50 max-h-60 overflow-y-auto"
               >
-                <Suspense>
-                  <HiArrowDown size={18} />
-                </Suspense>
-                <p>최신 순</p>
+                <div
+                  className="flex flex-row gap-6 px-4 py-2 border border-light-gray hover:bg-light-gray/20 cursor-pointer text-sm"
+                  onClick={() => handleSort("desc")}
+                >
+                  <Suspense>
+                    <HiArrowDown size={18} />
+                  </Suspense>
+                  <p>최신 순</p>
+                </div>
+                <div
+                  className="flex flex-row gap-6 px-4 py-2 border border-light-gray hover:bg-light-gray/20 cursor-pointer text-sm"
+                  onClick={() => handleSort("asc")}
+                >
+                  <Suspense>
+                    <HiArrowUp size={18} />
+                  </Suspense>
+                  <p>오래된 순</p>
+                </div>
               </div>
-              <div
-                className="flex flex-row gap-6 px-4 py-2 border border-light-gray hover:bg-light-gray/20 cursor-pointer text-sm"
-                onClick={() => handleSort("asc")}
-              >
-                <Suspense>
-                  <HiArrowUp size={18} />
-                </Suspense>
-                <p>오래된 순</p>
-              </div>
-            </div>
-          )}
+            )
+          }
         </div>
 
         {MOCK_DATA.length !== 0 && (
