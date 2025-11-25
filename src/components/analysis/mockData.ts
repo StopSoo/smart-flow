@@ -9,7 +9,7 @@ export const PERIOD_MOCK_DATA: LineProductionStatisticsData[] = [
         period: "daily",
         range: {
             start: "2025.11.20",
-            end: "2025.11.20",
+            end: new Date().toISOString().split('T')[0],
         },
         line_statistics: [
             {
@@ -452,7 +452,7 @@ export const PERIOD_MOCK_DATA: LineProductionStatisticsData[] = [
         period: "weekly",
         range: {
             start: "2025.11.17",
-            end: "2025.11.20",
+            end: new Date().toISOString().split('T')[0].split('T')[0],
         },
         line_statistics: [
             {
@@ -644,7 +644,7 @@ export const PERIOD_MOCK_DATA: LineProductionStatisticsData[] = [
         period: "monthly",
         range: {
             start: "2025.11.01",
-            end: "2025.11.20",
+            end: new Date().toISOString().split('T')[0].split('T')[0],
         },
         line_statistics: [
             {
@@ -858,7 +858,7 @@ export const PERIOD_MOCK_DATA: LineProductionStatisticsData[] = [
         period: "annually",
         range: {
             start: "2025.01.01",
-            end: "2025.11.20",
+            end: new Date().toISOString().split('T')[0].split('T')[0],
         },
         line_statistics: [
             {

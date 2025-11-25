@@ -64,7 +64,6 @@ export default function ProductionHistory() {
                 <div className="flex items-start justify-between mb-6">
                     <h3 className="text-xl text-black font-bold">생산 품목 별 ROLL 양불 수량</h3>
                 </div>
-                {/* TODO: ABNORMAL_ROLL_MOCK_DATA 명세 수정하고 데이터 써서 수정하기 */}
                 <div className="flex flex-row gap-6 items-center justify-between">
                     {
                         currentData[0].line_list
