@@ -11,6 +11,7 @@ export const MOCK_DATA: ProductionHistoryItem[] = [
             name: "사용자\n업로드",
         },
         applied_model: null,
+
         total_count: 124,
         normal_count: 0,
         defective_count: 124,
