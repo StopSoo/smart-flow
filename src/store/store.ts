@@ -25,6 +25,12 @@ export const useMemberModalStore = create<ModalStore>((set) => ({
     setIsModalClose: () => set({ isModalOpen: false })
 }))
 
+export const useLoginSuccessStore = create<ModalStore>((set) => ({
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
 /* 분석 플랫폼 */
 // 인공지능 페이지
 export const useSortConfigStore = create<SortConfigStore>((set) => ({
