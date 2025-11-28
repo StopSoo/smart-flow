@@ -4,32 +4,29 @@ import Image from "next/image";
 
 function CardComponent({ type, title }: { type: string, title: string }) {
     return (
-        <div className="w-[600px] border-[4px] border-light-gray p-6 bg-white">
-            <div className="flex flex-row items-center justify-center gap-3 mb-4">
-                <h3 className="text-xl text-black font-semibold">{title}</h3>
-                <div
-                    className={`w-4 h-4 rounded-full`}
-                />
+        <div className="w-full min-h-[450px] border-[4px] border-light-gray p-6 bg-white flex flex-col gap-6 items-center">
+            <h3 className="text-xl text-black font-semibold">{title}</h3>
+            <div className="flex flex-col items-center justify-center">
+                {
+                    type === "accuracy"
+                        ? <Image
+                            src="/assets/confusion_matrix.png"
+                            alt="confusion matrix image"
+                            width={450}
+                            height={338}
+                            priority
+                            fetchPriority="high"
+                        />
+                        : <Image
+                            src="/assets/loss_image.png"
+                            alt="loss image"
+                            width={720}
+                            height={240}
+                            priority
+                            fetchPriority="high"
+                        />
+                }
             </div>
-            {
-                type === "accuracy"
-                    ? <Image
-                        src="/assets/accuracy.png"
-                        alt="accuracy image"
-                        width={451}
-                        height={189}
-                        priority
-                        fetchPriority="high"
-                    />
-                    : <Image
-                        src="/assets/loss.png"
-                        alt="nexten logo"
-                        width={430}
-                        height={189}
-                        priority
-                        fetchPriority="high"
-                    />
-            }
         </div>
     );
 }
@@ -97,7 +94,7 @@ export default function ModelDataDetailPage() {
                 </div>
 
                 <div className="flex flex-row gap-6 items-center justify-center p-6">
-                    <CardComponent type="accuracy" title="모델 Accuracy" />
+                    <CardComponent type="accuracy" title="모델 Confusion Matrix" />
                     <CardComponent type="loss" title="모델 Loss" />
                 </div>
 
@@ -134,7 +131,7 @@ export default function ModelDataDetailPage() {
                     </div>
                 </div>
 
-                <div className="bg-white border-light-gray overflow-hidden px-6">
+                <div className="bg-white border-light-gray overflow-hidden p-6 pt-0">
                     <table className="w-full">
                         <thead className="border-b border-light-gray bg-soft-white">
                             <tr className="h-[56px] text-center text-base font-bold text-black">
