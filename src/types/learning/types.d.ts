@@ -30,3 +30,39 @@ export interface AIModelListResponse {
     status: "SUCCESS" | "FAIL";
     data: AIModelListItem;
 }
+// ---------
+// API: 검사 기준 변경 로그 조회
+export interface ViewTestStandardResults {
+    parameters: {
+        angl: {
+            max: number;
+            min: number;
+        },
+        angr: {
+            max: number;
+            min: number;
+        },
+        head: {
+            max: number;
+            min: number;
+        },
+        neck: {
+            max: number;
+            min: number;
+        },
+        defect_rate_baseline: string;
+    },
+    created_at: string;
+}
+
+export interface ViewTestStandardData {
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: ViewTestStandardResults[];
+}
+
+export interface ViewTestStandardLogResponse {
+    status: "SUCCESS" | "FAIL";
+    data: ViewTestStandardData;
+}

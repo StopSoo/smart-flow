@@ -1,13 +1,28 @@
 'use client';
 
+import MultipleButton from "@/components/common/MultipleButton";
+import Pagination from "@/components/common/Pagination";
+import { Picker } from "@/components/common/Picker";
 import SemiHeader from "@/components/common/SemiHeader";
 import Layout from "@/components/layout/Layout";
+import { PL_DETAIL_MOCK_DATA } from "@/mock/learning/mock";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 export default function ManagementDetailPage() {
     const params = useParams();
     const id = params.id;
+
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [currentTab, setCurrentTab] = useState<number>(1);
+    const [itemsPerPage, setItemsPerPage] = useState<string>('10');
+
+    const itemsPerPageOptions = [
+        { label: "10개", value: "10" },
+        { label: "20개", value: "20" },
+        { label: "50개", value: "50" }
+    ];
 
     return (
         <Layout headerTitle="생산라인 관리">
@@ -127,7 +142,7 @@ export default function ManagementDetailPage() {
                     </div>
                 </div>
 
-                <div className="flex flex-row items-center bg-white border-y-2 border-light-gray mx-6">
+                <div className="w-1/2 flex flex-row items-center bg-white border-y-2 border-light-gray mx-6">
                     <div className="flex items-center justify-center bg-soft-white min-w-[183px] h-[70px] font-bold">
                         <h2 className="text-lg text-black">ROLL 불량률 기준</h2>
                     </div>
@@ -139,6 +154,113 @@ export default function ManagementDetailPage() {
                             className="w-[150px] h-10 border-2 border-medium-gray rounded-xl text-center"
                         />
                     </div>
+                </div>
+
+                <MultipleButton
+                    type="selectAll"
+                    title="검사 기준 변경"
+                    className="mx-6"
+                    disabled={false}
+                    onClick={() => { }}
+                />
+
+                <div className="flex flex-col gap-6 w-full h-full p-6">
+                    <div className="flex flex-row items-center gap-6">
+                        <h2 className="text-3xl text-black font-bold">검사 기준 변경 로그</h2>
+                        <Picker
+                            type="select"
+                            title=""
+                            value={itemsPerPage}
+                            onChange={setItemsPerPage}
+                            options={itemsPerPageOptions}
+                        />
+                    </div>
+
+                    <div className="bg-white border-light-gray overflow-hidden">
+                        <table className="w-full">
+                            <thead className="border-b border-light-gray bg-soft-white">
+                                <tr className="h-[56px] text-center text-base font-bold text-black">
+                                    <th className="w-[80px]">No</th>
+                                    <th className="w-[340px]">변경 일자</th>
+                                    <th className="w-[230px]">헤드</th>
+                                    <th className="w-[230px]">Y부</th>
+                                    <th className="w-[230px]">빗각L</th>
+                                    <th className="w-[230px]">빗각R</th>
+                                    <th className="w-[230px]">기준 불량률</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    PL_DETAIL_MOCK_DATA.slice((currentPage - 1) * Number(itemsPerPage),
+                                        currentPage * Number(itemsPerPage)).map((item, idx) =>
+                                            <tr
+                                                key={idx}
+                                                className="w-full h-[80px] text-center border-b border-light-gray"
+                                            >
+                                                <td className="text-base px-2 w-[80px]">{(currentPage - 1) * Number(itemsPerPage) + idx + 1}</td>
+                                                <td className="text-base px-2 border border-light-gray w-[340px]">{item.created_at}</td>
+                                                <td className="text-base w-[230px] border border-light-gray gap-1 items-center justify-between px-10">
+                                                    <div className="flex gap-1 justify-between">
+                                                        <p>{item.parameters.head.min}</p>
+                                                        <p>{item.parameters.head.max}</p>
+                                                    </div>
+                                                </td>
+                                                <td className="text-base w-[230px] border border-light-gray gap-1 items-center justify-between px-10">
+                                                    <div className="flex gap-1 justify-between">
+                                                        <p>{item.parameters.neck.min}</p>
+                                                        <p>{item.parameters.neck.max}</p>
+                                                    </div>
+                                                </td>
+                                                <td className="text-base w-[230px] border border-light-gray gap-1 items-center justify-between px-10">
+                                                    <div className="flex gap-1 justify-between">
+                                                        <p>{item.parameters.angl.min}</p>
+                                                        <p>{item.parameters.angl.max}</p>
+                                                    </div>
+                                                </td>
+                                                <td className="text-base w-[230px] border border-light-gray gap-1 items-center justify-between px-10">
+                                                    <div className="flex gap-1 justify-between">
+                                                        <p>{item.parameters.angr.min}</p>
+                                                        <p>{item.parameters.angr.max}</p>
+                                                    </div>
+                                                </td>
+                                                <td className="w-[230px] gap-1 items-center justify-center">
+                                                    {item.parameters.defect_rate_baseline}
+                                                </td>
+                                            </tr>
+                                        )
+                                }
+
+                                {
+                                    PL_DETAIL_MOCK_DATA && Array.from({
+                                        length: Math.max(
+                                            0,
+                                            Number(itemsPerPage) -
+                                            PL_DETAIL_MOCK_DATA.slice(
+                                                (currentPage - 1) * Number(itemsPerPage),
+                                                currentPage * Number(itemsPerPage)
+                                            ).length
+                                        ),
+                                    }).map((_, i) => (
+                                        <tr
+                                            key={`empty-${i}`}
+                                            className="h-[80px] border-b border-light-gray"
+                                        >
+                                            <td colSpan={8}></td>
+                                        </tr>
+                                    ))
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <Pagination
+                        total={PL_DETAIL_MOCK_DATA.length}
+                        page={currentPage}
+                        limit={Number(itemsPerPage)}
+                        tab={currentTab}
+                        setPage={setCurrentPage}
+                        setTab={setCurrentTab}
+                    />
                 </div>
             </div>
         </Layout>

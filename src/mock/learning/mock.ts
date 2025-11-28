@@ -1,4 +1,4 @@
-import { ResultsItem } from "@/types/learning/types";
+import { ResultsItem, ViewTestStandardResults } from "@/types/learning/types";
 
 export const LIST_MOCK_DATA: ResultsItem[] = [
     {
@@ -146,5 +146,272 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
         loss: 0,
         is_applied: false,
         trained_with: [],
+    },
+];
+
+export const PL_DETAIL_MOCK_DATA: ViewTestStandardResults[] = [
+    {
+        parameters: {
+            angl: {
+                max: 0.3299,
+                min: 0.31
+            },
+            angr: {
+                max: 0.3299,
+                min: 0.31
+            },
+            head: {
+                max: 0.7599,
+                min: 0.74
+            },
+            neck: {
+                max: 0.4099,
+                min: 0.39
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3299,
+                min: 0.31
+            },
+            angr: {
+                max: 0.8302,
+                min: 0.789
+            },
+            head: {
+                max: 0.7299,
+                min: 0.71
+            },
+            neck: {
+                max: 0.4011,
+                min: 0.39
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3211,
+                min: 0.31
+            },
+            angr: {
+                max: 0.3299,
+                min: 0.31
+            },
+            head: {
+                max: 0.7599,
+                min: 0.74
+            },
+            neck: {
+                max: 0.419,
+                min: 0.319
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3299,
+                min: 0.31
+            },
+            angr: {
+                max: 0.3299,
+                min: 0.31
+            },
+            head: {
+                max: 0.7599,
+                min: 0.74
+            },
+            neck: {
+                max: 0.4099,
+                min: 0.39
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3299,
+                min: 0.31
+            },
+            angr: {
+                max: 0.8302,
+                min: 0.789
+            },
+            head: {
+                max: 0.7299,
+                min: 0.71
+            },
+            neck: {
+                max: 0.4011,
+                min: 0.39
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3211,
+                min: 0.31
+            },
+            angr: {
+                max: 0.3299,
+                min: 0.31
+            },
+            head: {
+                max: 0.7599,
+                min: 0.74
+            },
+            neck: {
+                max: 0.419,
+                min: 0.319
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3299,
+                min: 0.31
+            },
+            angr: {
+                max: 0.3299,
+                min: 0.31
+            },
+            head: {
+                max: 0.7599,
+                min: 0.74
+            },
+            neck: {
+                max: 0.4099,
+                min: 0.39
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3299,
+                min: 0.31
+            },
+            angr: {
+                max: 0.8302,
+                min: 0.789
+            },
+            head: {
+                max: 0.7299,
+                min: 0.71
+            },
+            neck: {
+                max: 0.4011,
+                min: 0.39
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3211,
+                min: 0.31
+            },
+            angr: {
+                max: 0.3299,
+                min: 0.31
+            },
+            head: {
+                max: 0.7599,
+                min: 0.74
+            },
+            neck: {
+                max: 0.419,
+                min: 0.319
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3299,
+                min: 0.31
+            },
+            angr: {
+                max: 0.3299,
+                min: 0.31
+            },
+            head: {
+                max: 0.7599,
+                min: 0.74
+            },
+            neck: {
+                max: 0.4099,
+                min: 0.39
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3299,
+                min: 0.31
+            },
+            angr: {
+                max: 0.8302,
+                min: 0.789
+            },
+            head: {
+                max: 0.7299,
+                min: 0.71
+            },
+            neck: {
+                max: 0.4011,
+                min: 0.39
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
+    },
+    {
+        parameters: {
+            angl: {
+                max: 0.3211,
+                min: 0.31
+            },
+            angr: {
+                max: 0.3299,
+                min: 0.31
+            },
+            head: {
+                max: 0.7599,
+                min: 0.74
+            },
+            neck: {
+                max: 0.419,
+                min: 0.319
+            },
+            defect_rate_baseline: "0.25"
+        },
+        created_at: "2025-11-26T23:48:42+09:00"
     },
 ];

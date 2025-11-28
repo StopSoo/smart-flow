@@ -49,6 +49,7 @@ export default function ModelDataDetailPage() {
                             <h2 className="text-lg text-black">적용 여부</h2>
                         </div>
                         <div className="flex flex-row text-medium-gray items-center justify-start w-full gap-3 px-4 py-4 font-bold">
+                            {/* TODO: 시안대로 수정 필요 */}
                             <p>O</p>
                         </div>
                     </div>
