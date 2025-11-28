@@ -78,7 +78,7 @@ export default function ModelDataDetailPage() {
                         <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
                             <h2 className="text-lg text-black">LOSS</h2>
                         </div>
-                        <div className="flex flex-row text-medium-gray items-center justify-center w-full gap-3 px-4 py-4 font-bold">
+                        <div className="flex flex-row text-medium-gray items-center justify-start w-full gap-3 px-4 py-4 font-bold">
                             <p>0.125</p>
                         </div>
                     </div>
