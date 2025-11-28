@@ -5,7 +5,9 @@ import Pagination from "@/components/common/Pagination";
 import { Picker } from "@/components/common/Picker";
 import SemiHeader from "@/components/common/SemiHeader";
 import Layout from "@/components/layout/Layout";
+import Modal from "@/components/modal/Modal";
 import { PL_DETAIL_MOCK_DATA } from "@/mock/learning/mock";
+import { useSuccessChangeStandardStore } from "@/store/store";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -13,6 +15,8 @@ import { useState } from "react";
 export default function ManagementDetailPage() {
     const params = useParams();
     const id = params.id;
+
+    const { isModalOpen, setIsModalOpen, setIsModalClose } = useSuccessChangeStandardStore();
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [currentTab, setCurrentTab] = useState<number>(1);
@@ -110,7 +114,7 @@ export default function ManagementDetailPage() {
                                         {item}
                                     </div>
                                     {/* TODO: 이미지 이름 다시 확인해서 넣기 */}
-                                    <div className="px-4 py-3 col-span-3">
+                                    <div className="px-4 py-3 col-span-3 flex items-center justify-center">
                                         <Image
                                             src={`/assets/${['pl_graph1.png', 'pl_graph2.png', 'pl_graph3.png', 'pl_graph4.png'][idx]}`}
                                             alt="graph"
@@ -161,7 +165,7 @@ export default function ManagementDetailPage() {
                     title="검사 기준 변경"
                     className="mx-6"
                     disabled={false}
-                    onClick={() => { }}
+                    onClick={() => setIsModalOpen()}
                 />
 
                 <div className="flex flex-col gap-6 w-full h-full p-6">
@@ -179,8 +183,8 @@ export default function ManagementDetailPage() {
                     <div className="bg-white border-light-gray overflow-hidden">
                         <table className="w-full">
                             <thead className="border-b border-light-gray bg-soft-white">
-                                <tr className="h-[56px] text-center text-base font-bold text-black">
-                                    <th className="w-[80px]">No</th>
+                                <tr className="h-[56px] text-center text-lg font-bold text-black">
+                                    <th className="w-[80px] font-bold">No</th>
                                     <th className="w-[340px]">변경 일자</th>
                                     <th className="w-[230px]">헤드</th>
                                     <th className="w-[230px]">Y부</th>
@@ -262,6 +266,15 @@ export default function ManagementDetailPage() {
                         setTab={setCurrentTab}
                     />
                 </div>
+
+                {
+                    isModalOpen
+                    && <Modal
+                        text="검사 기준 변경 완료"
+                        onClick={setIsModalClose}
+                        onClose={setIsModalClose}
+                    />
+                }
             </div>
         </Layout>
     );

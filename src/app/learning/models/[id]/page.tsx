@@ -1,6 +1,10 @@
+'use client';
+
+import MultipleButton from "@/components/common/MultipleButton";
 import SemiHeader from "@/components/common/SemiHeader";
 import Layout from "@/components/layout/Layout";
 import Image from "next/image";
+import { GiCheckMark } from "react-icons/gi";
 
 function CardComponent({ type, title }: { type: string, title: string }) {
     return (
@@ -48,9 +52,18 @@ export default function ModelDataDetailPage() {
                         <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
                             <h2 className="text-lg text-black">적용 여부</h2>
                         </div>
-                        <div className="flex flex-row text-medium-gray items-center justify-start w-full gap-3 px-4 py-4 font-bold">
-                            {/* TODO: 시안대로 수정 필요 */}
-                            <p>O</p>
+                        <div className="flex flex-row text-medium-gray items-center justify-start w-full gap-10 px-4 font-bold">
+                            {/* TODO: 적용 여부에 따른 아이콘 렌더링 설정 */}
+                            {
+                                <GiCheckMark size={30} className="text-point-blue" />
+                            }
+                            <MultipleButton
+                                type="simple"
+                                title="적용"
+                                className="w-[80px] text-lg"
+                                // TODO: 적용 API 연결
+                                onClick={() => { }}
+                            />
                         </div>
                     </div>
 

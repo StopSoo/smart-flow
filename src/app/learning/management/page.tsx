@@ -17,12 +17,12 @@ interface CardProps {
 function CardComponent({ status, title, head, neck, angl, angr, onClick }: CardProps) {
     return (
         <div
-            className={`flex flex-col items-center gap-2 border-[4px] border-light-gray p-6 cursor-pointer
+            className={`flex flex-col items-center gap-4 border-[4px] border-light-gray p-6 cursor-pointer
                         ${status === "stop" ? "bg-light-gray/30" : "bg-white"} hover:bg-soft-white`}
             onClick={onClick}
         >
             <h3 className="text-2xl text-black font-semibold">{title}</h3>
-            <div className="flex flex-row gap-6">
+            <div className="flex flex-row gap-10">
                 <Image
                     src="/assets/mock_data_images/Image19700101_1002160146631.bmp"
                     alt="contactpin_image"
@@ -31,15 +31,15 @@ function CardComponent({ status, title, head, neck, angl, angr, onClick }: CardP
                     priority
                     fetchPriority="high"
                 />
-                <div className="flex flex-col items-center justify-center w-[250px] gap-3 mb-4">
+                <div className="flex flex-col items-center justify-center gap-5 mb-4">
                     <div className="flex flex-row gap-5">
                         <h3 className="text-lg text-black font-semibold">
                             {status === "activate" ? "가동 중" : "비가동 중"}
                         </h3>
                         <div className={`w-6 h-6 rounded-full ${status === "activate" ? "bg-point-green" : "bg-point-red"}`} />
                     </div>
-                    <div className="flex flex-col gap-3">
-                        <p>contactpin_1</p>
+                    <div className="flex flex-col gap-3 w-[200px]">
+                        <p className="text-lg text-center font-semibold">contactpin_1</p>
                         <div>
                             <div className="flex flex-row justify-between">
                                 <p>헤드</p>
