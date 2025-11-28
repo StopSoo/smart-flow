@@ -16,7 +16,7 @@ export default function MultipleButton({ type, title, disabled, className = "", 
                     : type === "selectAll"
                         ? "bg-point-blue text-white border-none hover:bg-point-blue/80 cursor-pointer"
                         : type === "simple"
-                            ? "w-12 h-12 flex items-center justify-center bg-point-blue text-white text-2xl font-bold rounded hover:bg-medium-gray/80 disabled:bg-light-gray disabled:cursor-not-allowed"
+                            ? "w-12 h-12 flex items-center justify-center bg-point-blue text-white text-2xl font-bold rounded cursor-pointer hover:bg-medium-gray/80 disabled:bg-light-gray disabled:cursor-not-allowed"
                             : type === "warning"
                                 ? "bg-yellow-500 text-white border-none hover:bg-yellow-600 cursor-pointer"
                                 : type === "danger"

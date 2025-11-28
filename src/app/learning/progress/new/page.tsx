@@ -183,7 +183,7 @@ export default function NewAILearningPage() {
                     <div className="bg-white border-y-2 border-light-gray overflow-hidden">
                         <table className="w-full">
                             <thead className="border-b border-light-gray bg-soft-white">
-                                <tr className="h-[56px] text-center text-base font-bold text-black">
+                                <tr className="h-[56px] text-center text-lg font-bold text-black">
                                     <th className="w-[80px]">선택</th>
                                     <th className="w-[80px]">No</th>
                                     <th className="w-[340px]">생산 일자</th>
@@ -199,7 +199,10 @@ export default function NewAILearningPage() {
                                         currentData.map((item) => (
                                             <Fragment key={item.id}>
                                                 <tr
-                                                    className="h-[56px] text-center border-b border-light-gray bg-white hover:bg-light-gray/30"
+                                                    className={`h-[56px] text-center border-b border-light-gray bg-white hover:bg-light-gray/20 hover:cursor-pointer
+                                                        ${expandedRows.has(item.id) ? "border-none bg-point-blue/50" : "bg-white"}
+                                                        `}
+                                                    onClick={() => handleRowExpand(item.id)}
                                                 >
                                                     <td className="h-[54px] flex items-center justify-center">
                                                         <input
@@ -223,42 +226,45 @@ export default function NewAILearningPage() {
                                                         {item.is_abnormal ? "불량" : "정상"}
                                                     </td>
                                                 </tr>
+
                                                 {
-                                                    expandedRows.has(item.id) && (
-                                                        <tr className="bg-light-gray/20">
-                                                            <td colSpan={7} className="py-4">
-                                                                <div className="flex justify-center gap-8 text-sm">
-                                                                    <div className="flex items-center gap-2">
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={selectedRows.has(item.id)}
-                                                                            onChange={() => handleRowSelect(item.id)}
-                                                                            className="w-4 h-4 cursor-pointer accent-point-blue"
-                                                                        />
-                                                                        <span>정상 데이터 ({item.normal_count.toLocaleString()})</span>
+                                                    expandedRows.has(item.id)
+                                                        ? (
+                                                            <tr className="bg-light-gray/20">
+                                                                <td colSpan={7} className="py-4">
+                                                                    <div className="flex justify-start gap-8 text-sm px-[80px]">
+                                                                        <div className="flex items-center text-base gap-2">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedRows.has(item.id)}
+                                                                                onChange={() => handleRowSelect(item.id)}
+                                                                                className="w-6 h-6 cursor-pointer accent-point-blue"
+                                                                            />
+                                                                            <span>정상 데이터 ({item.normal_count.toLocaleString()})</span>
+                                                                        </div>
+                                                                        <div className="flex items-center text-base gap-2">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedRows.has(item.id)}
+                                                                                onChange={() => handleRowSelect(item.id)}
+                                                                                className="w-6 h-6 cursor-pointer accent-point-blue"
+                                                                            />
+                                                                            <span>불량 데이터 ({item.defective_count.toLocaleString()})</span>
+                                                                        </div>
+                                                                        <div className="flex items-center text-base gap-2">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedRows.has(item.id)}
+                                                                                onChange={() => handleRowSelect(item.id)}
+                                                                                className="w-6 h-6 cursor-pointer accent-point-blue"
+                                                                            />
+                                                                            <span>AI 예외 데이터 ({Math.floor(item.total_count * 0.001)})</span>
+                                                                        </div>
                                                                     </div>
-                                                                    <div className="flex items-center gap-2">
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={selectedRows.has(item.id)}
-                                                                            onChange={() => handleRowSelect(item.id)}
-                                                                            className="w-4 h-4 cursor-pointer accent-point-blue"
-                                                                        />
-                                                                        <span>불량 데이터 ({item.defective_count.toLocaleString()})</span>
-                                                                    </div>
-                                                                    <div className="flex items-center gap-2">
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={selectedRows.has(item.id)}
-                                                                            onChange={() => handleRowSelect(item.id)}
-                                                                            className="w-4 h-4 cursor-pointer accent-point-blue"
-                                                                        />
-                                                                        <span>AI 예외 데이터 ({Math.floor(item.total_count * 0.001)})</span>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    )
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                        : null
                                                 }
                                             </Fragment>
                                         ))

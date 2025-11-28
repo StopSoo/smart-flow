@@ -9,6 +9,7 @@ import { LIST_MOCK_DATA } from "@/mock/learning/mock";
 import { ResultsItem } from "@/types/learning/types";
 import { GiCheckMark } from "react-icons/gi";
 import Pagination from "@/components/common/Pagination";
+import {useRouter} from "next/navigation";
 
 interface FilterOptions {
     production_name: string;
@@ -16,6 +17,8 @@ interface FilterOptions {
 }
 
 export default function ModelsPage() {
+    const router = useRouter();
+    
     const [data, setData] = useState<ResultsItem[]>(LIST_MOCK_DATA);
     const [itemsPerPage, setItemsPerPage] = useState<string>('10');
     const [currentPage, setCurrentPage] = useState(1);
@@ -120,7 +123,7 @@ export default function ModelsPage() {
                             title="모두 선택"
                             disabled={selectedItems.length === 10}
                             onClick={handleSelectAll}
-                            className="w-[95px]"
+                            className="w-[100px]"
                         />
 
                         <MultipleButton
@@ -128,7 +131,7 @@ export default function ModelsPage() {
                             title="모두 해제"
                             disabled={selectedItems.length === 0}
                             onClick={handleDeselectAll}
-                            className="w-[95px]"
+                            className="w-[100px]"
                         />
                     </div>
 
@@ -137,7 +140,7 @@ export default function ModelsPage() {
                         title="삭제"
                         disabled={selectedItems.length === 0}
                         onClick={handleDeleteSelected}
-                        className="w-[95px]"
+                        className="w-[100px]"
                     />
                 </div>
 
@@ -161,6 +164,7 @@ export default function ModelsPage() {
                                         <Fragment key={item.id}>
                                             <tr
                                                 className="h-[70px] text-medium-gray flex flex-row items-center text-center border-b border-light-gray bg-white hover:bg-light-gray/30"
+                                                onClick={() => router.push(`/learning/models/${item.id}`)}
                                             >
                                                 <td className="w-[80px] flex items-center justify-center">
                                                     <input

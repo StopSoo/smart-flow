@@ -1,8 +1,9 @@
 'use client';
 
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import NextImage from "next/image";
 
 import SemiHeader from "@/components/common/SemiHeader";
 import Layout from "@/components/layout/Layout";
@@ -10,15 +11,20 @@ import { Picker } from "@/components/common/Picker";
 import Pagination from "@/components/common/Pagination";
 import { DETAIL_MOCK_DATA } from "@/mock/analysis/mock";
 import { ProductionHistoryEachItem_A } from "@/types/analysis/types";
+import { useSelectedImageStore } from "@/store/store";
+import { MOCK_POLYGONS } from "@/mock/mock_polygons";
 
 export default function AnalysisDataDetailPage() {
     const params = useParams();
     const id = params.id;
+    const canvasRef = useRef<HTMLCanvasElement>(null); // 비트맵 이미지용 ref 객체
+
     const [data, setData] = useState<ProductionHistoryEachItem_A>();
-    const [selectedImageNumber, setSelectedImageNumber] = useState<number>();
     const [itemsPerPage, setItemsPerPage] = useState<string>('10');
     const [currentPage, setCurrentPage] = useState(1);
     const [tab, setTab] = useState(1);
+
+    const { selectedImageId, setSelectedImageId } = useSelectedImageStore();
 
     const [filters, setFilters] = useState<{
         inspectionResult: string,
@@ -42,115 +48,68 @@ export default function AnalysisDataDetailPage() {
         { label: "O", value: "O" },
         { label: "X", value: "X" },
     ];
-    // 목데이터
-    interface tableDataItem {
-        id: number;
-        image_name: string;
-        ai_result: string;
-        is_process: string;
-    };
-
-    const tableData: tableDataItem[] = [
-        {
-            id: 1,
-            image_name: "20250502_001_001_00001.png",
-            ai_result: "정상",
-            is_process: "O",
-        },
-        {
-            id: 2,
-            image_name: "20250502_001_001_00002.png",
-            ai_result: "정상",
-            is_process: "O",
-        },
-        {
-            id: 3,
-            image_name: "20250502_001_001_00003.png",
-            ai_result: "정상",
-            is_process: "X",
-        },
-        {
-            id: 4,
-            image_name: "20250502_001_001_00004.png",
-            ai_result: "불량",
-            is_process: "O",
-        },
-        {
-            id: 5,
-            image_name: "20250502_001_001_00005.png",
-            ai_result: "정상",
-            is_process: "X",
-        },
-        {
-            id: 6,
-            image_name: "20250502_001_001_00001.png",
-            ai_result: "정상",
-            is_process: "O",
-        },
-        {
-            id: 7,
-            image_name: "20250502_001_001_00002.png",
-            ai_result: "정상",
-            is_process: "O",
-        },
-        {
-            id: 8,
-            image_name: "20250502_001_001_00003.png",
-            ai_result: "정상",
-            is_process: "X",
-        },
-        {
-            id: 9,
-            image_name: "20250502_001_001_00004.png",
-            ai_result: "불량",
-            is_process: "O",
-        },
-        {
-            id: 10,
-            image_name: "20250502_001_001_00005.png",
-            ai_result: "정상",
-            is_process: "X",
-        },
-        {
-            id: 11,
-            image_name: "20250502_001_001_00001.png",
-            ai_result: "정상",
-            is_process: "O",
-        },
-        {
-            id: 12,
-            image_name: "20250502_001_001_00002.png",
-            ai_result: "정상",
-            is_process: "O",
-        },
-        {
-            id: 13,
-            image_name: "20250502_001_001_00003.png",
-            ai_result: "정상",
-            is_process: "X",
-        },
-        {
-            id: 14,
-            image_name: "20250502_001_001_00004.png",
-            ai_result: "불량",
-            is_process: "O",
-        },
-        {
-            id: 15,
-            image_name: "20250502_001_001_00005.png",
-            ai_result: "정상",
-            is_process: "X",
-        },
-    ];
 
     const handleFilterChange = (key: keyof { inspectionResult: string, isProcess: string, label: string }, value: string) => {
         setFilters(prev => ({ ...prev, [key]: value }));
+    };
+    // TODO: API 연동 시 수정
+    const handleBitmapImage = () => {
+        if (!canvasRef.current) {
+            return;
+        }
+
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+            return;
+        }
+
+        const image = new window.Image();
+        image.onload = () => {
+            canvas.width = image.width;
+            canvas.height = image.height;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            // TODO: INITIAL_MASK_POLY -> 라벨 데이터로 변경
+            if (selectedImageId !== '') {
+                MOCK_POLYGONS[selectedImageId].forEach((polygon) => {
+                    if (polygon.length > 0) {
+                        ctx.beginPath();
+                        ctx.moveTo(polygon[0][0], polygon[0][1]);
+
+                        for (let i = 1; i < polygon.length; i++) {
+                            ctx.lineTo(polygon[i][0], polygon[i][1]);
+                        }
+
+                        ctx.closePath();
+
+                        ctx.lineJoin = 'round';
+                        ctx.lineCap = 'round';
+                        ctx.fillStyle = "rgba(0, 255, 0, 0.15)";
+                        ctx.strokeStyle = "#00B71B60";
+                        ctx.lineWidth = 8;
+                        ctx.stroke();
+                        ctx.fill();
+                    }
+                });
+            }
+        };
+
+        image.src = `/assets/mock_data_images/${selectedImageId}.bmp`;
     };
 
     useEffect(() => {
         const selected_data = DETAIL_MOCK_DATA.filter((item) => item.id === Number(id) && item)
         setData(selected_data[0]);
     }, []);
+
+    useEffect(() => {
+        handleBitmapImage();
+    }, [selectedImageId]);
 
     return (
         <Layout headerTitle="인공지능 분석">
@@ -280,15 +239,15 @@ export default function AnalysisDataDetailPage() {
                         </div>
 
                         <div className="flex flex-row justify-end font-bold text-black">
-                            <p>전체: {data ? data.datasets.length : 0}건</p>
+                            <p>전체: {data ? data.datasets.length.toLocaleString() : 0}건</p>
                         </div>
 
                         <div className="bg-white border-y-2 border-light-gray overflow-hidden">
                             <table className="w-full h-[550px]">
                                 <thead className="border-b border-light-gray bg-soft-white py-3 text-center text-lg font-bold text-black">
                                     <tr>
-                                        <th className="py-3">No</th>
-                                        <th className="py-3">컨택트 핀 이미지</th>
+                                        <th className="py-3 w-[80px]">No</th>
+                                        <th className="py-3 w-[500px]">컨택트 핀 이미지</th>
                                         <th className="py-3">AI 결과</th>
                                         <th className="py-3">가공 여부</th>
                                     </tr>
@@ -302,15 +261,16 @@ export default function AnalysisDataDetailPage() {
                                                     (currentPage - 1) * Number(itemsPerPage),
                                                     currentPage * Number(itemsPerPage)
                                                 )
-                                                .map((item) => (
+                                                .map((item, idx) => (
                                                     <tr
-                                                        key={item.id}
-                                                        className={`h-[55px] text-base border-b border-light-gray text-center cursor-pointer ${selectedImageNumber === Number(item.id) ? "bg-point-blue/50 text-white" : "bg-white hover:bg-light-gray/30"}`}
-                                                        onClick={() => setSelectedImageNumber(Number(item.id))}
+                                                        key={String((currentPage - 1) * Number(itemsPerPage) + idx) + '_' + item.id}
+                                                        className={`h-[55px] text-base border-b border-light-gray text-center cursor-pointer ${selectedImageId === item.id ? "bg-point-blue/50 text-white" : "bg-white hover:bg-light-gray/30"}`}
+                                                        onClick={() => setSelectedImageId(item.id)}
                                                     >
+                                                        <td className="px-4 py-3">{(currentPage - 1) * Number(itemsPerPage) + idx + 1}</td>
+                                                        {/* TODO: 이미지 이름 다시 확인해서 넣기 */}
                                                         <td className="px-4 py-3">{item.id}</td>
-                                                        <td className="px-4 py-3">{item.dataset_id}</td>
-                                                        <td className={`px-4 py-3 font-bold ${item.classification_result === "불량" ? "text-point-red" : selectedImageNumber === Number(item.id) ? "text-white" : "text-medium-gray"} `}>{item.classification_result}</td>
+                                                        <td className={`px-4 py-3 font-bold ${item.classification_result === "불량" ? "text-point-red" : selectedImageId === item.id ? "text-white" : "text-medium-gray"} `}>{item.classification_result}</td>
                                                         <td className="px-4 py-3">{item.refined_at !== null ? "O" : "X"}</td>
                                                     </tr>
                                                 ))
@@ -349,20 +309,23 @@ export default function AnalysisDataDetailPage() {
                             </table>
                         </div>
 
-                        <Pagination
-                            total={tableData.length}
-                            page={currentPage}
-                            limit={Number(itemsPerPage)}
-                            tab={tab}
-                            setPage={setCurrentPage}
-                            setTab={setTab}
-                        />
+                        {
+                            data
+                            && <Pagination
+                                total={data?.datasets.length}
+                                page={currentPage}
+                                limit={Number(itemsPerPage)}
+                                tab={tab}
+                                setPage={setCurrentPage}
+                                setTab={setTab}
+                            />
+                        }
                     </div>
 
                     <div className="min-w-[500px] flex flex-col gap-6 pt-[74px]">
                         <div className="h-[510px] border-[4px] border-light-gray bg-soft-white flex items-center justify-center p-6">
                             {
-                                selectedImageNumber === undefined ? (
+                                selectedImageId === '' ? (
                                     <p className="text-medium-gray text-xl">
                                         이미지를 선택해주세요
                                     </p>
@@ -371,26 +334,10 @@ export default function AnalysisDataDetailPage() {
                                     <div className="flex flex-col items-center gap-12">
                                         <p className="text-xl text-black font-bold">이미지 View</p>
                                         <div className="w-[440px] h-[330px] relative">
-                                            <Image
-                                                src="/assets/contactpin_ex_image.png"
-                                                alt="nexten logo"
-                                                width={440}
-                                                height={330}
-                                                priority
-                                                fetchPriority="high"
+                                            <canvas
+                                                ref={canvasRef}
+                                                className="max-w-full max-h-[330px] object-contain"
                                             />
-                                            <div
-                                                className="w-[440px] h-[330px] absolute top-0 left-0"
-                                            >
-                                                <div className="absolute top-[145px] left-[180px] rounded-xl bg-point-green w-1 h-13" />
-                                                <div className="absolute top-[125px] left-[155px] rounded-xl text-point-green text-sm text-center font-bold w-7 h-5" >Y부</div>
-                                                <div className="absolute top-[150px] right-[73px] rounded-xl bg-point-green w-1 h-13" />
-                                                <div className="absolute top-[165px] right-[80px] rounded-xl text-point-green text-sm text-center font-bold w-7 h-5" >헤드</div>
-                                                <div className="absolute top-[97px] left-[235px] rotate-78 rounded-xl bg-point-green w-1 h-22" />
-                                                <div className="absolute top-[110px] left-[220px] rounded-xl text-point-green text-sm text-center font-bold w-10 h-5" >빗각L</div>
-                                                <div className="absolute bottom-[81px] left-[235px] rotate-102 rounded-xl bg-point-green w-1 h-22" />
-                                                <div className="absolute bottom-[90px] left-[220px] rounded-xl text-point-green text-sm text-center font-bold w-10 h-5" >빗각R</div>
-                                            </div>
                                         </div>
                                     </div>
                                 )
@@ -403,13 +350,15 @@ export default function AnalysisDataDetailPage() {
                                     <h2 className="text-lg text-black">헤드</h2>
                                 </div>
                                 <div className="flex flex-row items-center justify-center w-full px-4 py-4 font-bold">
-                                    <p>{data?.datasets.map((d) => Number(d.id) === selectedImageNumber && d.attributes.head)}</p>
+                                    {/* <p>{data?.datasets.map((d) => d.id === selectedImageId && d.attributes.head)}</p> */}
+                                    <p>0.7581</p>
                                 </div>
                                 <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
                                     <h2 className="text-lg text-black">Y부</h2>
                                 </div>
                                 <div className="flex flex-row items-center justify-center w-full px-4 py-4 font-bold">
-                                    <p>{data?.datasets.map((d) => Number(d.id) === selectedImageNumber && d.attributes.neck)}</p>
+                                    {/* <p>{data?.datasets.map((d) => d.id === selectedImageId && d.attributes.neck)}</p> */}
+                                    <p>0.2819</p>
                                 </div>
                             </div>
                             <div className="flex flex-row items-center bg-white border-y-2 border-light-gray">
@@ -417,13 +366,15 @@ export default function AnalysisDataDetailPage() {
                                     <h2 className="text-lg text-black">빗각L</h2>
                                 </div>
                                 <div className="flex flex-row items-center justify-center w-full px-4 py-4 font-bold">
-                                    <p>{data?.datasets.map((d) => Number(d.id) === selectedImageNumber && d.attributes.angl)}</p>
+                                    {/* <p>{data?.datasets.map((d) => d.id === selectedImageId && d.attributes.angl)}</p> */}
+                                    <p>0.3529</p>
                                 </div>
                                 <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
                                     <h2 className="text-lg text-black">빗각R</h2>
                                 </div>
                                 <div className="flex flex-row items-center justify-center w-full px-4 py-4 font-bold">
-                                    <p>{data?.datasets.map((d) => Number(d.id) === selectedImageNumber && d.attributes.angr)}</p>
+                                    {/* <p>{data?.datasets.map((d) => d.id === selectedImageId && d.attributes.angr)}</p> */}
+                                    <p>0.3123</p>
                                 </div>
                             </div>
                         </div>

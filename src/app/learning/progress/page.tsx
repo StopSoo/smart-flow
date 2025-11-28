@@ -24,7 +24,7 @@ export default function ProgressPage() {
                     <MultipleButton
                         type="simple"
                         title="인공지능 학습"
-                        className="w-40 text-xl hover:bg-point-blue/80"
+                        className="w-40 text-xl hover:bg-point-blue/80 cursor-pointer"
                         onClick={() => router.push('/learning/progress/new')}
                     />
                 </div>
@@ -51,9 +51,9 @@ export default function ProgressPage() {
                                         <tr
                                             key={item.id}
                                             className="h-[73px] text-base border-b border-light-gray text-center hover:bg-light-gray/30 cursor-pointer"
-                                        // onClick={() =>
-                                        //     router.push(`/learning/progress/${item.id}`)
-                                        // }
+                                        onClick={() =>
+                                            router.push(`/learning/progress/${item.id}`)
+                                        }
                                         >
                                             <td className="px-4 py-3">{(currentPage - 1) * Number(itemsPerPage) + idx + 1}</td>
                                             <td className="px-4 py-3 whitespace-pre-line">

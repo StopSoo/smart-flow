@@ -11,7 +11,7 @@ export default function MenuBar() {
     const isSelectedPlatform = (platformName: string) => pathname.includes(platformName);
 
     return (
-        <div className="min-w-[242px] flex flex-col items-center justify-end bg-white border-r-[4px] border-point-red py-[44px]">
+        <div className="min-w-[242px] min-h-screen flex flex-col items-center justify-end bg-white border-r-[4px] border-point-red py-[44px]">
             <div className="fixed top-[140px] pt-[44px]">
                 {
                     // 분석 플랫폼
@@ -20,19 +20,19 @@ export default function MenuBar() {
                             <Button
                                 title="메인"
                                 isActive={isActive('/analysis/main')}
-                                disabled={isActive('/analysis/main')}
+                                disabled={false}
                                 onClick={() => router.push('/analysis/main')}
                             />
                             <Button
                                 title="데이터 업로드"
                                 isActive={isActive('/analysis/upload')}
-                                disabled={isActive('/analysis/upload')}
+                                disabled={false}
                                 onClick={() => router.push('/analysis/upload')}
                             />
                             <Button
                                 title="인공지능 분석"
                                 isActive={isSelectedPlatform('/analysis/result')}
-                                disabled={isSelectedPlatform('/analysis/result')}
+                                disabled={false}
                                 onClick={() => router.push('/analysis/result')}
                             />
                         </div>
@@ -45,13 +45,13 @@ export default function MenuBar() {
                             <Button
                                 title="메인"
                                 isActive={isActive('/processing/main')}
-                                disabled={isActive('/processing/main')}
+                                disabled={false}
                                 onClick={() => router.push('/processing/main')}
                             />
                             <Button
                                 title="데이터 가공"
                                 isActive={isSelectedPlatform('/processing/process-data')}
-                                disabled={isSelectedPlatform('/processing/process-data')}
+                                disabled={false}
                                 onClick={() => router.push('/processing/process-data')}
                             />
                         </div>
@@ -64,19 +64,19 @@ export default function MenuBar() {
                             <Button
                                 title="인공지능 학습"
                                 isActive={isSelectedPlatform('/learning/progress')}
-                                disabled={isSelectedPlatform('/learning/progress')}
+                                disabled={false}
                                 onClick={() => router.push('/learning/progress')}
                             />
                             <Button
                                 title="인공지능 모델"
                                 isActive={isSelectedPlatform('/learning/models')}
-                                disabled={isSelectedPlatform('/learning/models')}
+                                disabled={false}
                                 onClick={() => router.push('/learning/models')}
                             />
                             <Button
                                 title="생산라인 관리"
                                 isActive={isSelectedPlatform('/learning/management')}
-                                disabled={isSelectedPlatform('/learning/management')}
+                                disabled={false}
                                 onClick={() => router.push('/learning/management')}
                             />
                         </div>

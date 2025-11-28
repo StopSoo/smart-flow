@@ -246,7 +246,7 @@ export default function ResultPage() {
           />
         </div>
 
-        <div className="bg-white border-y-2 border-light-gray overflow-hidden h-full">
+        <div className="bg-white border-y-2 border-light-gray overflow-hidden">
           <table className="w-full">
             <thead className="border-b border-light-gray bg-soft-white py-3 text-center text-base xl:text-lg font-bold text-black">
               <tr>
@@ -313,7 +313,7 @@ export default function ResultPage() {
                       <td className="px-4 py-3">
                         {item.defect_rate}%<br />(
                         {item.defective_count}/
-                        {item.defective_count + item.normal_count})
+                        {item.total_count})
                       </td>
                       <td
                         className={`px-4 py-3 font-bold ${item.is_abnormal

@@ -38,3 +38,14 @@ export const useSortConfigStore = create<SortConfigStore>((set) => ({
     setDesc: () => set({ isDesc: true }),
     setAsc: () => set({ isDesc: false }),
 }))
+
+/* 가공 플랫폼 */
+// 데이터 가공 - 결과 상세 조회 페이지
+interface SelectedImageStore {
+    selectedImageId: string;
+    setSelectedImageId: (id: string) => void;
+}
+export const useSelectedImageStore = create<SelectedImageStore>((set) => ({
+    selectedImageId: '',
+    setSelectedImageId: (id) => set({ selectedImageId: id }),
+}))

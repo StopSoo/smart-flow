@@ -26,7 +26,9 @@ export default function ProcessDataDetailPage() {
                 <SemiHeader headerTitle="이미지 편집" />
 
                 <div className="flex flex-col p-6 gap-12">
-                    <EditImage onDataChange={handleDataChange} />
+                    <EditImage
+                        onDataChange={handleDataChange}
+                    />
                     <div className="flex flex-row w-full gap-6">
                         <BasicButton
                             type="submit"

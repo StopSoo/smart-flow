@@ -5,7 +5,7 @@ export default function ReadyAILearningPage() {
     return (
         <Layout headerTitle="AI 모델 학습 플랫폼">
             <div className="w-full flex flex-col">
-                <SemiHeader headerTitle="인공지능 학습 준비" />
+                <SemiHeader headerTitle="인공지능 학습" />
 
                 <div className="flex flex-col p-6 gap-6">
                     <h2 className="text-2xl text-black font-bold">학습 대상 데이터</h2>
@@ -17,28 +17,28 @@ export default function ReadyAILearningPage() {
                             </div>
                             <div className="flex flex-row items-center justify-center w-full px-4 py-4 font-bold">
                                 {/* TODO: 값 넣기 */}
-                                <p></p>
+                                <p>109,995</p>
                             </div>
                             <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
                                 <h2 className="text-lg text-black">정상 데이터 수</h2>
                             </div>
                             <div className="flex flex-col items-center justify-center w-full px-4 py-[11px] font-bold">
                                 {/* TODO: 값 넣기 */}
-                                <p></p>
+                                <p>108,535</p>
                             </div>
                             <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
                                 <h2 className="text-lg text-black">불량 데이터 수</h2>
                             </div>
                             <div className="flex flex-col items-center justify-center w-full px-4 py-[11px] font-bold">
                                 {/* TODO: 값 넣기 */}
-                                <p></p>
+                                <p>1,442</p>
                             </div>
                             <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
                                 <h2 className="text-lg text-black">AI 예외 데이터 수</h2>
                             </div>
                             <div className="flex flex-col items-center justify-center w-full px-4 py-[11px] font-bold">
                                 {/* TODO: 값 넣기 */}
-                                <p></p>
+                                <p>18</p>
                             </div>
                         </div>
 
@@ -48,13 +48,13 @@ export default function ReadyAILearningPage() {
                             </div>
                             <div className="flex flex-row items-center justify-center w-full px-4 py-4 font-bold">
                                 {/* TODO: 값 넣기 */}
-                                <p></p>
+                                <p>contactpin_1, contactpin_2</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white border-y-2 border-light-gray overflow-hidden">
+                <div className="bg-white border-y-2 border-light-gray overflow-hidden p-6">
                     <table className="w-full">
                         <thead className="border-b border-light-gray bg-soft-white">
                             <tr className="h-[56px] text-center text-base font-bold text-black">

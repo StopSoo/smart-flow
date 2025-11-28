@@ -11,8 +11,10 @@ import { Picker } from "@/components/common/Picker";
 import Pagination from "@/components/common/Pagination";
 import MultipleButton from "@/components/common/MultipleButton";
 import { MOCK_DATA } from "@/mock/processing/mock";
-import { INITIAL_MASK_POLY } from "@/components/processing/process-data/EditImage";
+// import { INITIAL_MASK_POLY } from "@/components/processing/process-data/EditImage";
 import { ProductionHistoryEachItem_P } from "@/types/processing/process-data";
+import { MOCK_POLYGONS } from "@/mock/mock_polygons";
+import { useSelectedImageStore } from "@/store/store";
 
 export default function ProcessDataDetailPage() {
   const params = useParams();
@@ -21,10 +23,11 @@ export default function ProcessDataDetailPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null); // 비트맵 이미지용 ref 객체
   const [data, setData] = useState<ProductionHistoryEachItem_P>();
   const [bitmapOn, setBitmapOn] = useState<boolean>(false);
-  const [selectedImageNumber, setSelectedImageNumber] = useState<string>();
   const [itemsPerPage, setItemsPerPage] = useState<string>('10');
   const [currentPage, setCurrentPage] = useState(1);
   const [currentTab, setCurrentTab] = useState(1);
+
+  const { selectedImageId, setSelectedImageId } = useSelectedImageStore();
 
   const [filters, setFilters] = useState<{
     inspectionResult: string,
@@ -53,106 +56,6 @@ export default function ProcessDataDetailPage() {
     { label: "Contact Pin", value: "Contact Pin" }
   ];
 
-  interface tableDataItem {
-    id: number;
-    image_name: string;
-    ai_result: string;
-    is_process: string;
-  };
-
-  const tableData: tableDataItem[] = [
-    {
-      id: 1,
-      image_name: "20250502_001_001_00001.png",
-      ai_result: "정상",
-      is_process: "O",
-    },
-    {
-      id: 2,
-      image_name: "20250502_001_001_00002.png",
-      ai_result: "정상",
-      is_process: "O",
-    },
-    {
-      id: 3,
-      image_name: "20250502_001_001_00003.png",
-      ai_result: "정상",
-      is_process: "X",
-    },
-    {
-      id: 4,
-      image_name: "20250502_001_001_00004.png",
-      ai_result: "불량",
-      is_process: "O",
-    },
-    {
-      id: 5,
-      image_name: "20250502_001_001_00005.png",
-      ai_result: "정상",
-      is_process: "X",
-    },
-    {
-      id: 6,
-      image_name: "20250502_001_001_00001.png",
-      ai_result: "정상",
-      is_process: "O",
-    },
-    {
-      id: 7,
-      image_name: "20250502_001_001_00002.png",
-      ai_result: "정상",
-      is_process: "O",
-    },
-    {
-      id: 8,
-      image_name: "20250502_001_001_00003.png",
-      ai_result: "정상",
-      is_process: "X",
-    },
-    {
-      id: 9,
-      image_name: "20250502_001_001_00004.png",
-      ai_result: "불량",
-      is_process: "O",
-    },
-    {
-      id: 10,
-      image_name: "20250502_001_001_00005.png",
-      ai_result: "정상",
-      is_process: "X",
-    },
-    {
-      id: 11,
-      image_name: "20250502_001_001_00001.png",
-      ai_result: "정상",
-      is_process: "O",
-    },
-    {
-      id: 12,
-      image_name: "20250502_001_001_00002.png",
-      ai_result: "정상",
-      is_process: "O",
-    },
-    {
-      id: 13,
-      image_name: "20250502_001_001_00003.png",
-      ai_result: "정상",
-      is_process: "X",
-    },
-    {
-      id: 14,
-      image_name: "20250502_001_001_00004.png",
-      ai_result: "불량",
-      is_process: "O",
-    },
-    {
-      id: 15,
-      image_name: "20250502_001_001_00005.png",
-      ai_result: "정상",
-      is_process: "X",
-    },
-  ];
-
   const handleFilterChange = (key: keyof { inspectionResult: string, isProcess: string, label: string }, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
@@ -173,34 +76,37 @@ export default function ProcessDataDetailPage() {
       canvas.width = image.width;
       canvas.height = image.height;
 
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
       // TODO: INITIAL_MASK_POLY -> 라벨 데이터로 변경
-      INITIAL_MASK_POLY.forEach((polygon) => {
-        if (polygon.length > 0) {
-          ctx.beginPath();
-          ctx.moveTo(polygon[0][0], polygon[0][1]);
+      if (selectedImageId !== '') {
+        MOCK_POLYGONS[selectedImageId].forEach((polygon) => {
+          if (polygon.length > 0) {
+            ctx.beginPath();
+            ctx.moveTo(polygon[0][0], polygon[0][1]);
 
-          for (let i = 1; i < polygon.length; i++) {
-            ctx.lineTo(polygon[i][0], polygon[i][1]);
+            for (let i = 1; i < polygon.length; i++) {
+              ctx.lineTo(polygon[i][0], polygon[i][1]);
+            }
+
+            ctx.closePath();
+
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.fillStyle = "rgba(0, 255, 0, 0.15)";
+            ctx.strokeStyle = "#00B71B60";
+            ctx.lineWidth = 8;
+            ctx.stroke();
+            ctx.fill();
           }
-
-          ctx.closePath();
-
-          ctx.lineJoin = 'round';
-          ctx.lineCap = 'round';
-          ctx.strokeStyle = "#00B71B60";
-          ctx.lineWidth = 2;
-          ctx.stroke();
-          ctx.fillStyle = "#00B71B60";
-          ctx.fill();
-        }
-      });
+        });
+      }
     };
 
-    image.src = "/assets/contactpin_ex_image.png";
+    image.src = `/assets/mock_data_images/${selectedImageId}.bmp`;
   };
 
   useEffect(() => {
@@ -212,7 +118,13 @@ export default function ProcessDataDetailPage() {
     if (bitmapOn) {
       handleBitmapImage();
     }
-  }, [bitmapOn, selectedImageNumber]);
+  }, [bitmapOn, selectedImageId]);
+
+  useEffect(() => {
+    return () => {
+      setSelectedImageId('');
+    }
+  }, [setSelectedImageId]);
 
   return (
     <Layout headerTitle="데이터 가공">
@@ -317,7 +229,7 @@ export default function ProcessDataDetailPage() {
                     <th className="py-3">가공 여부</th>
                   </tr>
                 </thead>
-                {/* TODO: 다시 체크 */}
+
                 <tbody>
                   {
                     data?.datasets.length !== 0 ? (
@@ -328,13 +240,13 @@ export default function ProcessDataDetailPage() {
                         )
                         .map((item, idx) => (
                           <tr
-                            key={item.id}
-                            className={`h-[55px] text-base border-b border-light-gray text-center cursor-pointer ${selectedImageNumber === item.id ? "bg-point-blue/50 text-white" : "bg-white hover:bg-light-gray/30"}`}
-                            onClick={() => setSelectedImageNumber(item.id)}
+                            key={String((currentPage - 1) * Number(itemsPerPage) + idx) + '_' + item.id}
+                            className={`h-[55px] text-base border-b border-light-gray text-center cursor-pointer ${selectedImageId === item.id ? "bg-point-blue/50 text-white" : "bg-white hover:bg-light-gray/30"}`}
+                            onClick={() => setSelectedImageId(item.id)}
                           >
-                            <td className="px-4 py-3">{(currentTab - 1) * 10 + (currentPage - 1) * Number(itemsPerPage) + idx + 1}</td>
+                            <td className="px-4 py-3">{(currentPage - 1) * Number(itemsPerPage) + idx + 1}</td>
                             <td className="px-4 py-3">{item.id}</td>
-                            <td className={`px-4 py-3 font-bold ${item.classification_result === "불량" ? "text-point-red" : selectedImageNumber === item.id ? "text-white" : "text-medium-gray"} `}>
+                            <td className={`px-4 py-3 font-bold ${item.classification_result === "불량" ? "text-point-red" : selectedImageId === item.id ? "text-white" : "text-medium-gray"} `}>
                               {item.classification_result}
                             </td>
                             <td className="px-4 py-3">{item.refined_at !== null ? "O" : "X"}</td>
@@ -422,7 +334,7 @@ export default function ProcessDataDetailPage() {
                 <div className="flex flex-row items-center justify-center w-full gap-3 px-4">
                   <input
                     type="checkbox"
-                    disabled={selectedImageNumber === undefined}
+                    disabled={selectedImageId === ''}
                     checked={bitmapOn}
                     onChange={() => setBitmapOn(!bitmapOn)}
                     className="w-8 h-8 cursor-pointer accent-point-blue"
@@ -433,7 +345,7 @@ export default function ProcessDataDetailPage() {
 
             <div className="h-[510px] border-[4px] border-light-gray bg-soft-white flex items-center justify-center p-6">
               {
-                selectedImageNumber === undefined ? (
+                selectedImageId === '' ? (
                   <p className="text-medium-gray text-xl">
                     이미지를 선택해주세요
                   </p>
@@ -447,8 +359,9 @@ export default function ProcessDataDetailPage() {
                           className="max-w-full max-h-[330px] object-contain"
                         />
                       )
+                        // TODO: API 연동 시 이미지 경로 수정
                         : <NextImage
-                          src="/assets/contactpin_ex_image.png"
+                          src={`/assets/mock_data_images/${selectedImageId}.bmp`}
                           alt="contact pin image"
                           width={440}
                           height={330}
@@ -464,7 +377,7 @@ export default function ProcessDataDetailPage() {
             <MultipleButton
               type="default"
               title="이미지 편집하기"
-              disabled={selectedImageNumber === undefined}
+              disabled={selectedImageId === undefined}
               className="text-lg"
               onClick={() =>
                 router.push(`/processing/process-data/${id}/edit`)
