@@ -1,11 +1,25 @@
+'use client';
+
 import Layout from "@/components/layout/Layout";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-function CardComponent({ status, title, head, neck, angl, angr }: { status: string, title: string, head: number, neck: number, angl: number, angr: number }) {
+interface CardProps {
+    status: string;
+    title: string;
+    head: number;
+    neck: number;
+    angl: number;
+    angr: number;
+    onClick: () => void;
+}
+
+function CardComponent({ status, title, head, neck, angl, angr, onClick }: CardProps) {
     return (
         <div
             className={`flex flex-col items-center gap-2 border-[4px] border-light-gray p-6 cursor-pointer
-            ${status === "stop" ? "bg-light-gray/30" : "bg-white"} hover:bg-soft-white`}
+                        ${status === "stop" ? "bg-light-gray/30" : "bg-white"} hover:bg-soft-white`}
+            onClick={onClick}
         >
             <h3 className="text-2xl text-black font-semibold">{title}</h3>
             <div className="flex flex-row gap-6">
@@ -52,6 +66,8 @@ function CardComponent({ status, title, head, neck, angl, angr }: { status: stri
 }
 
 export default function ManagementPage() {
+    const router = useRouter();
+
     return (
         <Layout headerTitle="생산라인 관리">
             <div className="flex flex-col gap-6 w-full h-full p-6">
@@ -64,6 +80,7 @@ export default function ManagementPage() {
                         neck={0.394}
                         angl={0.300}
                         angr={0.311}
+                        onClick={() => router.push(`/learning/management/${1}`)}
                     />
                     <CardComponent
                         title="생산라인2"
@@ -72,6 +89,7 @@ export default function ManagementPage() {
                         neck={0.394}
                         angl={0.300}
                         angr={0.311}
+                        onClick={() => router.push(`/learning/management/${2}`)}
                     />
                 </div>
             </div>
