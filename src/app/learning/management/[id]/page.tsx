@@ -1,3 +1,5 @@
+'use client';
+
 import SemiHeader from "@/components/common/SemiHeader";
 import Layout from "@/components/layout/Layout";
 import { useParams } from "next/navigation";

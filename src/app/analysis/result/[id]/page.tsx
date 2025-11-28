@@ -2,8 +2,6 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import NextImage from "next/image";
 
 import SemiHeader from "@/components/common/SemiHeader";
 import Layout from "@/components/layout/Layout";
