@@ -21,7 +21,7 @@ export default function Modal({ text, onClick, onClose }: ModalProps) {
         >
             <div className="flex flex-col items-center justify-between bg-white rounded-xl border-4 border-black shadow-lg px-6 py-6 min-w-[400px] min-h-[300px]">
                 <IoMdCheckmarkCircleOutline size={80} />
-                <p className="text-medium-gray text-2xl font-bold">
+                <p className="text-medium-gray text-2xl font-bold whitespace-pre-line text-center">
                     {text}
                 </p>
                 <BasicButton onClick={onClick}>

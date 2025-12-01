@@ -8,9 +8,11 @@ import { persist } from 'zustand/middleware';
 export const useMemberStore = create<MemberStore>()(
     persist(
         (set) => ({
-            username: 'covi', /* TODO: API 연결 시 수정 */
+            username: 'username',
             setUsername: (newState) => set({ username: newState }),
-            role: 'USER',
+            role: 'user',
+            isLogin: false,
+            setIsLogin: (state) => set({ isLogin: state }),
         }),
         {
             name: 'memberNameStorage',
@@ -26,6 +28,18 @@ export const useMemberModalStore = create<ModalStore>((set) => ({
 }))
 
 export const useLoginSuccessStore = create<ModalStore>((set) => ({
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
+export const useSignupSuccessStore = create<ModalStore>((set) => ({
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
+export const useEditInfoSuccessStore = create<ModalStore>((set) => ({
     isModalOpen: false,
     setIsModalOpen: () => set({ isModalOpen: true }),
     setIsModalClose: () => set({ isModalOpen: false })

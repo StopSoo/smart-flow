@@ -6,8 +6,11 @@ import Image from "next/image";
 
 import Input from "@/components/common/Input";
 import BasicButton from "@/components/common/BasicButton";
-import { SignupFormData } from "@/types/signup/types";
 import { isValidBranchName, isValidHeadqurter, isValidPw, isValidPwConfirm, isValidUsername } from "@/utils/regEx";
+import { SignupFormData, UpdateInfoRequest } from "@/types/member/types";
+import { memberApi } from "@/apis/member";
+import { useEditInfoSuccessStore } from "@/store/store";
+import Modal from "@/components/modal/Modal";
 
 const BiInfo = lazy(() => import('react-icons/bi').then(module => ({
     default: module.BiInfoCircle
@@ -16,33 +19,69 @@ const BiInfo = lazy(() => import('react-icons/bi').then(module => ({
 export default function EditInfoPage() {
     const router = useRouter();
 
+    const { isModalOpen, setIsModalOpen, setIsModalClose } = useEditInfoSuccessStore();
+
     const [formData, setFormData] = useState<SignupFormData>({
         /* TODO: API 연결 시 수정 */
-        username: "KIMKIYONG",
-        password: "1234",
-        passwordConfirm: "1234",
-        headquarter: "코드비전",
-        branch_name: "연구소"
+        username: "",
+        password: "",
+        passwordConfirm: "",
+        headquarter: "",
+        branch: "",
     });
     const [isPassPw, setIsPassPw] = useState(false);
     const [isPassPwConfirm, setIsPassPwConfirm] = useState(false);
     const [isPassHeadquarter, setIsPassHeadquarter] = useState(false);
     const [isPassBranchName, setIsPassBranchName] = useState(false);
     const [isSignupButtonClick, setIsSignupButtonClick] = useState(false);
-
-    const handleSignupSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    // 정보 조회
+    const viewMyInfo = async () => {
+        try {
+            const response = await memberApi.getInfo();
+            if (response && response.status === "SUCCESS") {
+                setFormData((prev) => ({
+                    ...prev,
+                    username: response.data.username,
+                    headquarter: response.data.headquarter,
+                    branch: response.data.branch,
+                }));
+            }
+        } catch (error) {
+            console.error('viewMyInfo error', error);
+        }
+    };
+    // 내 정보 변경
+    const handleEditInfo = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsSignupButtonClick(true);
 
-        // TODO: API call
-        console.log("Signup attempt:", formData);
+        try {
+            const updatedData: UpdateInfoRequest = {
+                password: formData.password,
+                headquarter: formData.headquarter,
+                branch_name: formData.branch,
+            }
+            const response = await memberApi.updateInfo(updatedData);
+            if (response && response.status === "SUCCESS") {
+                setIsModalOpen();
+            }
+        } catch (error) {
+            console.error('handleEditInfo error', error);
+        } finally {
+            setIsSignupButtonClick(false);
+        }
     };
 
     useEffect(() => {
         if (formData.password !== "" && isValidPw(formData.password)) setIsPassPw(true);
         if (formData.passwordConfirm !== "" && isValidPwConfirm(formData.password, formData.passwordConfirm)) setIsPassPwConfirm(true);
         if (formData.headquarter !== "" && isValidHeadqurter(formData.headquarter)) setIsPassHeadquarter(true);
-        if (formData.branch_name !== "" && isValidBranchName(formData.branch_name)) setIsPassBranchName(true);
+        if (formData.branch !== "" && isValidBranchName(formData.branch)) setIsPassBranchName(true);
     }, [formData]);
+
+    useEffect(() => {
+        viewMyInfo();
+    }, []);
 
     return (
         <div className="flex-1 flex flex-col items-center justify-center bg-white">
@@ -63,7 +102,7 @@ export default function EditInfoPage() {
                 <div className="w-full border-t border-light-gray" />
 
                 <form
-                    onSubmit={handleSignupSubmit}
+                    onSubmit={handleEditInfo}
                     className="w-full flex flex-col gap-12"
                 >
                     <div className="flex flex-col w-[588px] gap-3">
@@ -177,16 +216,16 @@ export default function EditInfoPage() {
                                 label="사업소"
                                 type="text"
                                 placeholder="국영문, 숫자, 공백, 특수 기호(-), (_)만 사용 가능"
-                                value={formData.branch_name}
+                                value={formData.branch}
                                 isCorrect={!isSignupButtonClick || isSignupButtonClick && isPassBranchName}
                                 onChange={(e) => {
-                                    setFormData({ ...formData, branch_name: e.target.value });
+                                    setFormData({ ...formData, branch: e.target.value });
                                     setIsSignupButtonClick(false);
                                 }}
                             />
 
                             {
-                                formData.branch_name !== "" && isSignupButtonClick
+                                formData.branch !== "" && isSignupButtonClick
                                     ? !isPassBranchName
                                     && (
                                         <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
@@ -211,7 +250,6 @@ export default function EditInfoPage() {
                         // TODO: API 연동 시 하나라도 정보 변경 시에만 활성화되도록 적용
                         // disabled={!isPassPw || !isPassPwConfirm || !isPassHeadquarter || !isPassBranchName}
                         className="cursor-pointer hover:bg-medium-gray/80"
-                        onClick={() => setIsSignupButtonClick(true)}
                     >
                         변경
                     </BasicButton>
@@ -224,6 +262,19 @@ export default function EditInfoPage() {
                     </BasicButton>
                 </div>
             </div>
+
+            {
+                isModalOpen
+                    ? <Modal
+                        text="회원 정보 변경에 성공했습니다."
+                        onClick={() => {
+                            setIsModalClose();
+                            router.back();
+                        }}
+                        onClose={setIsModalClose}
+                    />
+                    : null
+            }
         </div>
     );
 }

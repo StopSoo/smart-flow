@@ -2,7 +2,17 @@
 export interface MemberStore {
     username: string;
     setUsername: (newState: string) => void;
-    role: 'USER' | 'ADMIN';
+    role: 'user' | 'admin' | 'super';
+    isLogin: boolean;
+    setIsLogin: (state: boolean) => void;
+}
+
+export interface SignupFormData {
+    username: string;
+    password: string;
+    passwordConfirm: string;
+    headquarter: string;
+    branch: string;
 }
 
 // API: Account - 정보 조회
@@ -16,9 +26,14 @@ export interface MemberData {
     updated_at: string;
 }
 
-export interface ViewMemberInfoResponse {
-    status: "SUCCESS" | "FAIL";
-    data: MemberData | {
+export interface ViewMemberInfoSuccessResponse {
+    status: "SUCCESS";
+    data: MemberData;
+}
+
+export interface ViewMemberInfoFailResponse {
+    status: "FAIL";
+    data: {
         message: string;
     };
 }
@@ -28,11 +43,17 @@ export interface IssueTokenRequest {
     password: string;
 }
 
-export interface IssueTokenResponse {
-    status: "SUCCESS" | "FAIL";
+export interface IssueTokenSuccessResponse {
+    status: "SUCCESS";
     data: {
+        username: string;
         token: string;
-    } | {
+    };
+}
+
+export interface IssueTokenFailResponse {
+    status: "FAIL";
+    data: {
         message: string;
     };
 }
@@ -57,9 +78,14 @@ export interface ActivateAccountData {
     updated_at: string;
 }
 
-export interface ActivateAccountResponse {
-    status: "SUCCESS" | "FAIL";
-    data: ActivateAccountData | {
+export interface ActivateAccountSuccessResponse {
+    status: "SUCCESS";
+    data: ActivateAccountData
+}
+
+export interface ActivateAccountFailResponse {
+    status: "FAIL";
+    data: {
         message: string;
     };
 }
@@ -81,9 +107,14 @@ export interface UpdateInfoData {
     updated_at: string;
 }
 
-export interface UpdateInfoResponse {
-    status: "SUCCESS" | "FAIL";
-    data: UpdateInfoData | {
+export interface UpdateInfoSuccessResponse {
+    status: "SUCCESS";
+    data: UpdateInfoData;
+}
+
+export interface UpdateInfoFailResponse {
+    status: "FAIL";
+    data: {
         message: string;
     };
 }

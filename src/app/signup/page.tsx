@@ -6,8 +6,11 @@ import Image from "next/image";
 
 import Input from "@/components/common/Input";
 import BasicButton from "@/components/common/BasicButton";
-import { SignupFormData } from "@/types/signup/types";
 import { isValidBranchName, isValidHeadqurter, isValidPw, isValidPwConfirm, isValidUsername } from "@/utils/regEx";
+import { memberApi } from "@/apis/member";
+import { RegisterRequest, SignupFormData } from "@/types/member/types";
+import { useSignupSuccessStore } from "@/store/store";
+import Modal from "@/components/modal/Modal";
 
 const BiInfo = lazy(() => import('react-icons/bi').then(module => ({
   default: module.BiInfoCircle
@@ -21,7 +24,7 @@ export default function SignupPage() {
     password: "",
     passwordConfirm: "",
     headquarter: "",
-    branch_name: ""
+    branch: ""
   });
   const [isPassUsername, setIsPassUsername] = useState(false);
   const [isPassPw, setIsPassPw] = useState(false);
@@ -29,12 +32,33 @@ export default function SignupPage() {
   const [isPassHeadquarter, setIsPassHeadquarter] = useState(false);
   const [isPassBranchName, setIsPassBranchName] = useState(false);
   const [isSignupButtonClick, setIsSignupButtonClick] = useState(false);
+  const isSignupButtonActive = isPassUsername && isPassPw && isPassPwConfirm && isPassHeadquarter && isPassBranchName;
 
-  const handleSignupSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const { isModalOpen, setIsModalOpen, setIsModalClose } = useSignupSuccessStore();
+
+  const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSignupButtonClick(true);
 
-    // TODO: API call
-    console.log("Signup attempt:", formData);
+    try {
+      const signupData: RegisterRequest = {
+        username: formData.username,
+        password: formData.password,
+        role: 'user',
+        headquarter: formData.headquarter,
+        branch_name: formData.branch,
+      };
+
+      const response = await memberApi.signup(signupData);
+      if (response && response.status === "SUCCESS") {
+        setIsModalOpen();
+      }
+    } catch (error) {
+      console.error('signup error', error);
+      setIsModalOpen();
+    } finally {
+      setIsSignupButtonClick(false);
+    }
   };
 
   useEffect(() => {
@@ -42,7 +66,7 @@ export default function SignupPage() {
     if (formData.password !== "" && isValidPw(formData.password)) setIsPassPw(true);
     if (formData.passwordConfirm !== "" && isValidPwConfirm(formData.password, formData.passwordConfirm)) setIsPassPwConfirm(true);
     if (formData.headquarter !== "" && isValidHeadqurter(formData.headquarter)) setIsPassHeadquarter(true);
-    if (formData.branch_name !== "" && isValidBranchName(formData.branch_name)) setIsPassBranchName(true);
+    if (formData.branch !== "" && isValidBranchName(formData.branch)) setIsPassBranchName(true);
   }, [formData]);
 
   return (
@@ -64,7 +88,7 @@ export default function SignupPage() {
         <div className="w-full border-t border-light-gray" />
 
         <form
-          onSubmit={handleSignupSubmit}
+          onSubmit={handleSignup}
           className="w-full flex flex-col gap-12"
         >
           <div className="flex flex-col w-[588px] gap-3">
@@ -81,16 +105,18 @@ export default function SignupPage() {
             />
 
             {
-              formData.username !== "" && isSignupButtonClick
+              isSignupButtonClick
                 ? !isPassUsername
-                && (
-                  <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
-                    <Suspense fallback={<div className="w-[30px] h-[30px]" />}>
-                      <BiInfo size={30} />
-                    </Suspense>
-                    <p>4~30자의 영문 대소문자만 입력해주세요.</p>
-                  </div>
-                )
+                  ? (
+                    <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
+                      <Suspense fallback={<div className="w-[30px] h-[30px]" />}>
+                        <BiInfo size={30} />
+                      </Suspense>
+                      <p>4~30자의 영문 대소문자만 입력해주세요.</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-row text-xl gap-3 h-[30px]" />
+                  )
                 : (
                   <div className="flex flex-row text-xl gap-3 h-[30px]" />
                 )
@@ -113,16 +139,18 @@ export default function SignupPage() {
               />
 
               {
-                formData.password !== "" && isSignupButtonClick
+                isSignupButtonClick
                   ? !isPassPw
-                  && (
-                    <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
-                      <Suspense fallback={<div className="w-[30px] h-[30px]" />}>
-                        <BiInfo size={30} />
-                      </Suspense>
-                      <p>4자 숫자만 입력해주세요.</p>
-                    </div>
-                  )
+                    ? (
+                      <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
+                        <Suspense fallback={<div className="w-[30px] h-[30px]" />}>
+                          <BiInfo size={30} />
+                        </Suspense>
+                        <p>4자 숫자만 입력해주세요.</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-row text-xl gap-3 h-[30px]" />
+                    )
                   : (
                     <div className="flex flex-row text-xl gap-3 h-[30px]" />
                   )
@@ -144,16 +172,18 @@ export default function SignupPage() {
               />
 
               {
-                formData.passwordConfirm !== "" && isSignupButtonClick
+                isSignupButtonClick
                   ? !isPassPwConfirm
-                  && (
-                    <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
-                      <Suspense fallback={<div className="w-[30px] h-[30px]" />}>
-                        <BiInfo size={30} />
-                      </Suspense>
-                      <p>비밀번호와 동일하게 입력해주세요.</p>
-                    </div>
-                  )
+                    ? (
+                      <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
+                        <Suspense fallback={<div className="w-[30px] h-[30px]" />}>
+                          <BiInfo size={30} />
+                        </Suspense>
+                        <p>비밀번호와 동일하게 입력해주세요.</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-row text-xl gap-3 h-[30px]" />
+                    )
                   : (
                     <div className="flex flex-row text-xl gap-3 h-[30px]" />
                   )
@@ -176,16 +206,18 @@ export default function SignupPage() {
               />
 
               {
-                formData.headquarter !== "" && isSignupButtonClick
+                isSignupButtonClick
                   ? !isPassHeadquarter
-                  && (
-                    <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
-                      <Suspense fallback={<div className="w-[30px] h-[30px]" />}>
-                        <BiInfo size={30} />
-                      </Suspense>
-                      <p>국영문, 숫자, 공백, 특수 기호(-), (_)만 입력해주세요.</p>
-                    </div>
-                  )
+                    ? (
+                      <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
+                        <Suspense fallback={<div className="w-[30px] h-[30px]" />}>
+                          <BiInfo size={30} />
+                        </Suspense>
+                        <p>국영문, 숫자, 공백, 특수 기호(-), (_)만 입력해주세요.</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-row text-xl gap-3 h-[30px]" />
+                    )
                   : (
                     <div className="flex flex-row text-xl gap-3 h-[30px]" />
                   )
@@ -197,25 +229,27 @@ export default function SignupPage() {
                 label="사업소"
                 type="text"
                 placeholder="국영문, 숫자, 공백, 특수 기호(-), (_)만 사용 가능"
-                value={formData.branch_name}
+                value={formData.branch}
                 isCorrect={!isSignupButtonClick || isSignupButtonClick && isPassBranchName}
                 onChange={(e) => {
-                  setFormData({ ...formData, branch_name: e.target.value });
+                  setFormData({ ...formData, branch: e.target.value });
                   setIsSignupButtonClick(false);
                 }}
               />
 
               {
-                formData.branch_name !== "" && isSignupButtonClick
+                isSignupButtonClick
                   ? !isPassBranchName
-                  && (
-                    <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
-                      <Suspense fallback={<div className="w-[30px] h-[30px]" />}>
-                        <BiInfo size={30} />
-                      </Suspense>
-                      <p>국영문, 숫자, 공백, 특수 기호(-), (_)만 입력해주세요.</p>
-                    </div>
-                  )
+                    ? (
+                      <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
+                        <Suspense fallback={<div className="w-[30px] h-[30px]" />}>
+                          <BiInfo size={30} />
+                        </Suspense>
+                        <p>국영문, 숫자, 공백, 특수 기호(-), (_)만 입력해주세요.</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-rowtext-xl gap-3 h-[30px]" />
+                    )
                   : (
                     <div className="flex flex-rowtext-xl gap-3 h-[30px]" />
                   )
@@ -235,13 +269,26 @@ export default function SignupPage() {
           <BasicButton
             type="submit"
             variant="primary"
-            disabled={!isPassUsername || !isPassPw || !isPassPwConfirm || !isPassHeadquarter || !isPassBranchName}
-            onClick={() => setIsSignupButtonClick(true)}
+            disabled={!isSignupButtonActive}
+            className={`${isSignupButtonActive ? "cursor-pointer" : ""}`}
           >
             계정 생성
           </BasicButton>
         </div>
       </div>
+
+      {
+        isModalOpen
+          ? <Modal
+            text="회원가입에 성공했습니다.\n로그인 페이지로 넘어갑니다."
+            onClick={() => {
+              setIsModalClose();
+              router.push('/');
+            }}
+            onClose={setIsModalClose}
+          />
+          : null
+      }
     </div>
   );
 }

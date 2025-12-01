@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, FormEvent, lazy, Suspense, useEffect } from "react";
+import { useState, lazy, Suspense, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 import Input from "@/components/common/Input";
 import BasicButton from "@/components/common/BasicButton";
-import { LoginFormData } from "@/types/login/types";
-import { useLoginSuccessStore } from "@/store/store";
+import { useLoginSuccessStore, useMemberStore } from "@/store/store";
 import Modal from "@/components/modal/Modal";
+import { memberApi } from "@/apis/member";
+import { IssueTokenRequest } from "@/types/member/types";
 
 const BiInfo = lazy(() => import('react-icons/bi').then(module => ({
   default: module.BiInfoCircle
@@ -17,31 +18,37 @@ const BiInfo = lazy(() => import('react-icons/bi').then(module => ({
 export default function LoginPage() {
   const router = useRouter();
   const [isClickButton, setIsClickButton] = useState(false);
-  const [isSuccessLogin, setIsSuccessLogin] = useState(true); // TODO: API 연동하면서 변경
 
-  const { isModalOpen, setIsModalOpen, setIsModalClose } = useLoginSuccessStore();
+  const { setUsername, isLogin, setIsLogin } = useMemberStore();
+  const { isModalOpen: isSuccessModalOpen, setIsModalOpen: setIsSuccessModalOpen, setIsModalClose: setIsSuccessModalClose } = useLoginSuccessStore();
 
-  const [formData, setFormData] = useState<LoginFormData>({
-    userId: "",
+  const [formData, setFormData] = useState<IssueTokenRequest>({
+    username: "",
     password: ""
   });
+  const isLoginButtonActive = formData.username !== ""
+    && formData.password !== ""
+    && formData.password.length === 4;
 
-  const handleLoginSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsClickButton(true);
 
-    // TODO: API call
-    // 성공하면 setIsSuccessLogin 값 true로 변경
-  };
-
-  const handleSignupButtonClick = () => {
-    router.push("/signup");
-  };
-
-  useEffect(() => {
-    if (isClickButton) {
-      setIsModalOpen();
+    try {
+      const response = await memberApi.login(formData);
+      if (response && response.status === "SUCCESS") {
+        setIsLogin(true);
+        setUsername(response.data.username); // 사용자 id 저장
+        setIsSuccessModalOpen();
+      } else {
+        setIsLogin(false);
+        setIsClickButton(false);
+      }
+    } catch (error) {
+      console.error('login error', error);
+      setIsLogin(false);
     }
-  }, [isClickButton]);
+  };
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-white">
@@ -60,29 +67,28 @@ export default function LoginPage() {
         </h1>
 
         <form
-          onSubmit={handleLoginSubmit}
+          onSubmit={handleLogin}
           className="w-full flex flex-col gap-6"
         >
-          {/* TODO: API 연결하면서 유효성 검사 적용 & isCorrect 값 변경 */}
           <Input
             label="아이디"
             type="text"
-            value={formData.userId}
-            isCorrect={!isClickButton || isClickButton && isSuccessLogin ? true : false}
-            onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
+            value={formData.username}
+            isCorrect={!isClickButton || isClickButton && isLogin ? true : false}
+            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
           />
 
           <Input
             label="비밀번호"
             type="password"
-            max={4}
+            maxLength={4}
             value={formData.password}
-            isCorrect={!isClickButton || isClickButton && isSuccessLogin ? true : false}
+            isCorrect={!isClickButton || isClickButton && isLogin ? true : false}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />
 
           {
-            isClickButton && !isSuccessLogin
+            isClickButton && !isLogin
               ? (
                 <div className="flex flex-row items-center text-point-red text-xl gap-3 h-[30px]">
                   <Suspense fallback={<div></div>}>
@@ -99,9 +105,11 @@ export default function LoginPage() {
           <BasicButton
             type="submit"
             variant="primary"
-            disabled={formData.userId === "" || formData.password === ""}
-            className={formData.userId !== "" && formData.password !== "" ? "hover:bg-light-gray/80 cursor-pointer" : ""}
-            onClick={() => setIsClickButton(true)}
+            disabled={!isLoginButtonActive}
+            className={isLoginButtonActive
+              ? "hover:bg-light-gray/80 cursor-pointer"
+              : ""
+            }
           >
             로그인
           </BasicButton>
@@ -112,18 +120,21 @@ export default function LoginPage() {
         <BasicButton
           variant="secondary"
           className="rounded-none"
-          onClick={handleSignupButtonClick}
+          onClick={() => router.push("/signup")}
         >
           회원가입
         </BasicButton>
       </div>
 
       {
-        isModalOpen
+        isSuccessModalOpen
           ? <Modal
             text="로그인에 성공했습니다."
-            onClick={() => router.push('/analysis/main')}
-            onClose={setIsModalClose}
+            onClick={() => {
+              setIsSuccessModalClose();
+              router.push('/analysis/main');
+            }}
+            onClose={setIsSuccessModalClose}
           />
           : null
       }
