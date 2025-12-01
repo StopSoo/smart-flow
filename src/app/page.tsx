@@ -75,6 +75,7 @@ export default function LoginPage() {
           <Input
             label="비밀번호"
             type="password"
+            max={4}
             value={formData.password}
             isCorrect={!isClickButton || isClickButton && isSuccessLogin ? true : false}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
