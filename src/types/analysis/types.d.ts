@@ -139,7 +139,7 @@ export interface ProductionHistoryEachItem_A {
         id: number;
         name: string;
     };
-    applied_model: string | null;
+    applied_model: string | null; // AI 모델
     first_image_created_at: string; // AI 검사 일자
     total_count: number;
     normal_count: number;
@@ -235,7 +235,7 @@ export interface ViewProductionHistoryNamesSuccessResponse {
 export interface UploadDataRequest {
     production_name: string;
     folder_name?: string;
-    files: string[];
+    files: File[];
     is_folder_upload: boolean;
 }
 

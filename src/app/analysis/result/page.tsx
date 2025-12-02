@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 
 import Pagination from "@/components/common/Pagination";
 import { Picker } from "@/components/common/Picker";
@@ -10,6 +10,7 @@ import MultipleButton from "@/components/common/MultipleButton";
 import { FilterOptions } from "@/types/processing/process-data";
 import { useSortConfigStore } from "@/store/store";
 import { ProductionHistoryEachItem_A } from "@/types/analysis/types";
+import { analysisApi } from "@/apis/analysis";
 
 const HiArrowUp = lazy(() => import('react-icons/hi').then(module => ({
   default: module.HiArrowUp
@@ -118,34 +119,62 @@ export default function ResultPage() {
     // });
   }, [isDesc]);
 
-  const productOptions = [
-    { label: "전체", value: "전체" },
-    { label: "contactpin_1", value: "contactpin_1" },
-    { label: "contactpin_2", value: "contactpin_2" }
-  ];
+  const [productOptions, setProductOptions] = useState<string[]>([
+    "전체",
+    "contactpin_1",
+    "contactpin_2"
+  ]);
 
-  const lineOptions = [
-    { label: "전체", value: "전체" },
-    { label: "생산라인1", value: "생산라인1" },
-    { label: "생산라인2", value: "생산라인2" }
-  ];
+  const [lineOptions, setLineOptions] = useState<string[]>([
+    "전체",
+    "생산라인1",
+    "생산라인2"
+  ]);
 
   const resultOptions = [
-    { label: "전체", value: "전체" },
-    { label: "정상", value: "정상" },
-    { label: "불량", value: "불량" }
+    "전체",
+    "정상",
+    "불량"
   ];
-
+  // TODO: API 구현 후 받아와야 함
   const modelOptions = [
-    { label: "전체", value: "전체" },
-    { label: "covi_seq_00001", value: "covi_seq_00001" }
+    "전체",
+    "covi_seq_00001"
   ];
 
   const itemsPerPageOptions = [
-    { label: "10개", value: "10" },
-    { label: "20개", value: "20" },
-    { label: "50개", value: "50" }
+    "10",
+    "20",
+    "50"
   ];
+
+  const handleOptions = async () => {
+    try {
+      const [pOptions, lOptions] = await Promise.all([
+        analysisApi.checkProductionHistoryNames(),
+        analysisApi.viewProductionLineList(),
+      ]);
+
+      if (pOptions && pOptions.status === "SUCCESS") {
+        setProductOptions(pOptions.data.items);
+      }
+      if (lOptions && lOptions.status === "SUCCESS") {
+        setLineOptions(lOptions.data.items.map((item) => item.name));
+      }
+    } catch (error) {
+      console.log('handleOptions api error', error);
+    }
+  };
+
+  const handleProductionHistories = async () => {
+    // try {
+    //   const response = await analysisApi.viewProductionHistories()
+    // }
+  };
+
+  useEffect(() => {
+    handleOptions();
+  }, []);
 
   return (
     <Layout headerTitle="인공지능 분석">

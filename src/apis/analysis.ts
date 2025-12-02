@@ -46,9 +46,30 @@ export const analysisApi = {
         }
     },
     // 데이터 업로드
-    uploadData: async (files: UploadDataRequest): Promise<UploadDataSuccessResponse | null> => {
-        const { data } = await axiosInstance.post<UploadDataSuccessResponse | FailResponse>
-            ('/api/productions/production-histories/upload/', files);
+    uploadData: async (uploadRequest: UploadDataRequest)
+        : Promise<UploadDataSuccessResponse | null> => {
+        const formData = new FormData();
+
+        formData.append('production_name', uploadRequest.production_name);
+        formData.append('is_folder_upload', String(uploadRequest.is_folder_upload));
+
+        if (uploadRequest.folder_name) {
+            formData.append('folder_name', uploadRequest.folder_name);
+        }
+
+        uploadRequest.files.forEach((file) => {
+            formData.append('files', file);
+        });
+
+        const { data } = await axiosInstance.post<UploadDataSuccessResponse | FailResponse>(
+            '/api/productions/production-histories/upload/',
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            }
+        );
 
         if (data.status === "SUCCESS") {
             return data;
@@ -99,7 +120,7 @@ export const analysisApi = {
             return null;
         }
     },
-    // 생산 이력 조회
+    // 생산 이력 조회 (가공/분석)
     viewProductionHistories: async (
         applied_model: string | null = null,
         start_created_at: string | null = null,

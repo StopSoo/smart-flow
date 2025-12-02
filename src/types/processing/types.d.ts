@@ -15,3 +15,32 @@ export interface InspectionDataPoint {
   inspected: number; // 검수 완료
   uninspected: number; // 검수 미완료
 }
+
+/* API */
+// API: 생산 이력 상세 조회 + 폴리곤
+export interface ProductionHistoryItemResponse {
+  status: "SUCCESS";
+  data: ProductionHistoryItem;
+}
+// API: 컨택트핀 폴리곤 조회
+export interface MaskPolyData {
+  id: string;
+  refined_by: number | null;
+  refined_at: string | null;
+  created_at: string;
+  mask_poly: number[][][];
+}
+
+export interface MaskPolyResponse {
+  status: "SUCCESS";
+  data: MaskPolyData;
+}
+// API: 컨택트핀 폴리곤 업데이트
+export interface UpdatedPolygonRequest {
+  mask_poly: number[][][];
+}
+
+export interface UpdatedPolygonResponse {
+  status: "SUCCESS";
+  data: string; // "" 예정
+}

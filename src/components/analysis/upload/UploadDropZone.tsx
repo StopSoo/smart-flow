@@ -10,8 +10,10 @@ interface UploadDropZoneProps {
     onShowModal: (type: ModalType) => void;
     onWarning: Dispatch<SetStateAction<boolean>>;
 }
-// TODO: png 파일 문제 해결하기
-export default function UploadDropZone({ selectedItem, isUploading, onUpload, onShowModal, onWarning }: UploadDropZoneProps) {
+
+export default function UploadDropZone(
+    { selectedItem, isUploading, onUpload, onShowModal, onWarning }: UploadDropZoneProps
+) {
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const folderInputRef = useRef<HTMLInputElement>(null);
@@ -39,7 +41,7 @@ export default function UploadDropZone({ selectedItem, isUploading, onUpload, on
         files: File[],
         basePath: string = '',
     ): Promise<void> => {
-        if (item.isFile) { // (1) 개별 파일
+        if (item.isFile) {
             const fileEntry = item as FileSystemFileEntry;
             const file = await new Promise<File>((resolve) => {
                 fileEntry.file(resolve);
@@ -52,15 +54,16 @@ export default function UploadDropZone({ selectedItem, isUploading, onUpload, on
             });
 
             files.push(file);
-        } else if (item.isDirectory) { // (2) 폴더 
+        } else if (item.isDirectory) {
             const dirEntry = item as FileSystemDirectoryEntry;
             const reader = dirEntry.createReader();
             const entries = await new Promise<FileSystemEntry[]>((resolve) => {
                 reader.readEntries(resolve);
             });
 
+            const newBasePath = basePath ? `${basePath}/${dirEntry.name}` : dirEntry.name;
             for (const entry of entries) {
-                await traverseFileTree(entry, files);
+                await traverseFileTree(entry, files, newBasePath);
             }
         }
     };
@@ -109,7 +112,7 @@ export default function UploadDropZone({ selectedItem, isUploading, onUpload, on
                     const item = items[i];
                     const itemEntry = item.webkitGetAsEntry?.();
                     if (itemEntry) {
-                        await traverseFileTree(itemEntry, allFiles);
+                        await traverseFileTree(itemEntry, allFiles, '');
                     }
                 }
             } else {
@@ -157,15 +160,28 @@ export default function UploadDropZone({ selectedItem, isUploading, onUpload, on
 
     const handleFolderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
-        if (files) {
-            const firstFile = files[0] as any;
-            const folderName = firstFile.webkitRelativePath?.split('/')[0] || 'unknown_folder';
+        if (!files || files.length === 0) return;
 
-            const vFiles = validateFiles(files);
-            if (vFiles) {
-                onUpload(vFiles, folderName);
+        const fileArray = Array.from(files);
+        const firstFile = fileArray[0] as any;
+        const folderName = firstFile.webkitRelativePath?.split('/')[0] || 'unknown_folder';
+
+        const filesWithPath = fileArray.map(file => {
+            const fileWithPath = file as any;
+            if (fileWithPath.webkitRelativePath) {
+                Object.defineProperty(file, 'fullPath', {
+                    value: fileWithPath.webkitRelativePath,
+                    writable: false,
+                });
             }
+            return file;
+        });
+
+        const vFiles = validateFiles(filesWithPath);
+        if (vFiles) {
+            onUpload(vFiles, folderName);
         }
+
         if (folderInputRef.current) {
             folderInputRef.current.value = '';
         }
@@ -186,15 +202,6 @@ export default function UploadDropZone({ selectedItem, isUploading, onUpload, on
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
             >
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept=".png,image/png,bmp,image/bmp"
-                    className="hidden"
-                    onChange={handleFileChange}
-                />
-
                 {
                     isUploading ? (
                         <div className="flex flex-col items-center gap-4">
@@ -207,7 +214,7 @@ export default function UploadDropZone({ selectedItem, isUploading, onUpload, on
                                 검사를 원하는 데이터를 여기에 놓거나, 버튼 클릭 후 선택해주세요.
                             </p>
                             <p className="text-base text-medium-gray/70 mt-2">
-                                ( .png, .bmp 파일이나 png, bmp 파일로 구성된 폴더만 업로드 가능합니다. )
+                                ( .png, .bmp 파일이나 .png, .bmp 파일로 구성된 폴더만 업로드 가능합니다. )
                             </p>
                         </div>
                     )}
@@ -235,7 +242,7 @@ export default function UploadDropZone({ selectedItem, isUploading, onUpload, on
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept=".png,image/png,bmp,image/bmp"
+                accept=".png,image/png,.bmp,image/bmp"
                 className="hidden"
                 onChange={handleFileChange}
             />

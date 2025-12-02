@@ -24,12 +24,12 @@ export default function UploadModal({ type, onClose }: UploadModalProps) {
             case 'error-format':
                 return {
                     color: 'bg-point-red',
-                    message: '파일은 png 형식만 업로드 가능합니다.'
+                    message: '파일은 .png, .bmp 형식만 업로드 가능합니다.'
                 };
             case 'error-folder':
                 return {
                     color: 'bg-point-red',
-                    message: '폴더에는 png 파일만 존재해야 합니다.'
+                    message: '폴더에는 .png, .bmp 파일만 존재해야 합니다.'
                 };
             case 'not-selected':
                 return {

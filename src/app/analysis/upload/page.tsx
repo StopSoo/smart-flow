@@ -7,106 +7,85 @@ import { Picker } from "@/components/common/Picker";
 import UploadModal from "@/components/analysis/upload/UploadModal";
 import UploadDropZone from "@/components/analysis/upload/UploadDropZone";
 import UploadDataTable from "@/components/analysis/upload/UploadDataTable";
-import { ModalType, UploadData, UploadedDataItem } from "@/types/analysis/upload";
+import { ModalType } from "@/types/analysis/upload";
+import { analysisApi } from "@/apis/analysis";
+import { UploadDataRequest } from "@/types/analysis/types";
 
 export default function UploadPage() {
     const [selectedItem, setSelectedItem] = useState('선택해주세요');
     const [isUploading, setIsUploading] = useState(false);
     const [modalType, setModalType] = useState<ModalType>(null);
-    const [isNotify, setIsNotify] = useState<boolean>(false); // 경고 여부
-    const [uploadData, setUploadData] = useState<UploadedDataItem[]>([
-        {
-            id: 1,
-            created_at: '2025.11.13 14:40:25',
-            production_name: 'contactpin_1',
-            is_uploaded: '20251113_001_001_01250.png',
-            file_count: 1,
-        },
-        {
-            id: 2,
-            created_at: '2025.11.13 14:40:25',
-            production_name: 'contactpin_1',
-            is_uploaded: 'contactpin_folder',
-            file_count: 1,
-        },
-        {
-            id: 3,
-            created_at: '2025.11.13 14:40:25',
-            production_name: 'contactpin_1',
-            is_uploaded: 'test',
-            file_count: 5,
-        },
-        {
-            id: 4,
-            created_at: '2025.11.12 14:40:25',
-            production_name: 'contactpin_2',
-            is_uploaded: '20251112_001_002_11111.png',
-            file_count: 1,
-        },
-        {
-            id: 5,
-            created_at: '2025.11.11 14:40:25',
-            production_name: 'contactpin_2',
-            is_uploaded: '20251111_002_001_fdgds.png',
-            file_count: 1,
-        },
-        {
-            id: 6,
-            created_at: '2025.11.11 14:40:25',
-            production_name: 'contactpin_2',
-            is_uploaded: '20251111_002_001_33333.png',
-            file_count: 1,
-        },
-    ]);
-    // 업로드할 이미지의 검사 항목
-    const inspectionOptions = [
-        { label: '선택해주세요', value: '선택해주세요' },
-        { label: 'contactpin_1', value: 'contactpin_1' },
-        { label: 'contactpin_2', value: 'contactpin_2' }
-    ];
+    const [isNotify, setIsNotify] = useState<boolean>(false);
+    const [refreshKey, setRefreshKey] = useState(0); // 테이블 새로고침용
+
+    const [options, setOptions] = useState<string[]>();
+
+    const handleProductionNames = async () => {
+        try {
+            const response = await analysisApi.checkProductionHistoryNames();
+            if (response && response.status === "SUCCESS") {
+                setOptions(response.data.items);
+            }
+        } catch (error) {
+            console.error('handleProductionNames api error', error);
+        }
+    };
 
     const handleUpload = async (files: File[], folderName: string) => {
         if (selectedItem === '선택해주세요') {
+            setModalType('not-selected');
+            setIsNotify(true);
+            return;
+        }
+
+        if (!files || files.length === 0) {
             setModalType('error-format');
             return;
         }
+
         setIsUploading(true);
 
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        const now = new Date();
-        const dateString = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+        try {
+            const newData: UploadDataRequest = {
+                production_name: selectedItem,
+                files: files,
+                is_folder_upload: folderName !== '',
+                ...(folderName && { folder_name: folderName })
+            };
 
-        const newData: UploadedDataItem = {
-            id: uploadData.length + 1,
-            production_name: selectedItem,
-            is_uploaded: folderName !== '' ? folderName : files[0].name,
-            file_count: files.length,
-            created_at: dateString,
-        };
+            const response = await analysisApi.uploadData(newData);
 
-        setUploadData(prev => [newData, ...prev]);
-        setIsUploading(false);
-        setModalType('success');
-    };
-
-    const handleShowModal = (type: ModalType) => {
-        setModalType(type);
-    };
-
-    const handleCloseModal = () => {
-        setModalType(null);
+            if (response && response.status === "SUCCESS") {
+                setModalType('success');
+                setRefreshKey(prev => prev + 1);
+            } else {
+                setModalType('error-format');
+            }
+        } catch (error) {
+            console.error('handleUpload error', error);
+            setModalType('error-format');
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     useEffect(() => {
-        if (selectedItem) {
+        if (selectedItem && selectedItem !== '선택해주세요') {
             setIsNotify(false);
         }
     }, [selectedItem]);
 
+    useEffect(() => {
+        handleProductionNames();
+    }, []);
+
     return (
         <Layout headerTitle="데이터 업로드">
             <div className="flex-1 flex flex-col p-6 gap-6">
-                <UploadModal type={modalType} onClose={handleCloseModal} />
+                <UploadModal
+                    type={modalType}
+                    onClose={() => setModalType(null)}
+                />
 
                 <div className="flex flex-col gap-4">
                     <Picker
@@ -114,7 +93,7 @@ export default function UploadPage() {
                         title=""
                         type="select"
                         onChange={setSelectedItem}
-                        options={inspectionOptions}
+                        options={options}
                         borderColor={`${isNotify ? "point-red" : ""}`}
                         className="w-[240px]"
                     />
@@ -128,11 +107,11 @@ export default function UploadPage() {
                     selectedItem={selectedItem}
                     isUploading={isUploading}
                     onUpload={handleUpload}
-                    onShowModal={handleShowModal}
+                    onShowModal={setModalType}
                     onWarning={setIsNotify}
                 />
 
-                <UploadDataTable data={uploadData} />
+                <UploadDataTable key={refreshKey} />
             </div>
         </Layout>
     );
