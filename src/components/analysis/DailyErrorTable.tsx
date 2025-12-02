@@ -75,7 +75,7 @@ export default function DailyErrorTable() {
                   <tr>
                     <td
                       colSpan={8}
-                      className="py-40 text-center font-bold text-lg text-medium-gray"
+                      className="py-[100px] text-center font-bold text-lg text-medium-gray"
                     >
                       조회되는 생산 데이터가 없습니다.
                     </td>
@@ -84,7 +84,7 @@ export default function DailyErrorTable() {
               }
 
               {
-                data &&
+                data && data.count > 0 &&
                 Array.from({
                   length: Math.max(
                     0,
@@ -101,7 +101,7 @@ export default function DailyErrorTable() {
         </div>
 
         {
-          data
+          data && data.count > 0
           && <Pagination
             total={data.count}
             page={currentPage}

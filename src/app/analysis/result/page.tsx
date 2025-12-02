@@ -10,7 +10,6 @@ import MultipleButton from "@/components/common/MultipleButton";
 import { FilterOptions } from "@/types/processing/process-data";
 import { useSortConfigStore } from "@/store/store";
 import { ProductionHistoryEachItem_A } from "@/types/analysis/types";
-import { DETAIL_MOCK_DATA } from "@/mock/analysis/mock";
 
 const HiArrowUp = lazy(() => import('react-icons/hi').then(module => ({
   default: module.HiArrowUp
@@ -39,7 +38,7 @@ export default function ResultPage() {
     applied_model: "전체"
   });
   const modalRef = useRef<HTMLDivElement>(null);
-  const [currentData, setCurrentData] = useState<ProductionHistoryEachItem_A[]>(DETAIL_MOCK_DATA);
+  const [currentData, setCurrentData] = useState<ProductionHistoryEachItem_A[]>();
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [isOpenTab, setIsOpenTab] = useState<boolean>(false);
   const [itemsPerPage, setItemsPerPage] = useState<string>('10');
@@ -51,10 +50,10 @@ export default function ResultPage() {
   };
 
   const handleSelectAll = () => {
-    const allIds = currentData
-      .slice((currentPage - 1) * Number(itemsPerPage), currentPage * Number(itemsPerPage))
-      .map(item => item.id);
-    setSelectedItems(allIds);
+    // const allIds = currentData
+    //   .slice((currentPage - 1) * Number(itemsPerPage), currentPage * Number(itemsPerPage))
+    //   .map(item => item.id);
+    // setSelectedItems(allIds);
   };
 
   const handleDeselectAll = () => {
@@ -77,7 +76,7 @@ export default function ResultPage() {
   };
 
   const handleDeleteSelected = () => {
-    setCurrentData(prev => prev.filter((data) => !selectedItems.includes(data.id)));
+    // setCurrentData(prev => prev.filter((data) => !selectedItems.includes(data.id)));
     setSelectedItems([]);
   };
 
@@ -107,16 +106,16 @@ export default function ResultPage() {
       return;
     }
 
-    setCurrentData((prev) => {
-      const sortedData = [...prev].sort((a, b) => {
-        const aDate = new Date(a.created_at).getTime();
-        const bDate = new Date(b.created_at).getTime();
+    // setCurrentData((prev) => {
+    //   const sortedData = [...prev].sort((a, b) => {
+    //     const aDate = new Date(a.created_at).getTime();
+    //     const bDate = new Date(b.created_at).getTime();
 
-        return isDesc ? bDate - aDate : aDate - bDate;
-      });
+    //     return isDesc ? bDate - aDate : aDate - bDate;
+    //   });
 
-      return sortedData;
-    });
+    //   return sortedData;
+    // });
   }, [isDesc]);
 
   const productOptions = [
@@ -281,7 +280,7 @@ export default function ResultPage() {
 
             <tbody>
               {
-                currentData.length !== 0 ? (
+                currentData && currentData.length !== 0 ? (
                   currentData.slice(
                     (currentPage - 1) * Number(itemsPerPage),
                     currentPage * Number(itemsPerPage)
@@ -342,7 +341,8 @@ export default function ResultPage() {
               }
 
               {
-                currentData.length !== 0
+                currentData
+                  && currentData.length !== 0
                   ? Array.from({
                     length: Math.max(
                       0,
@@ -395,7 +395,8 @@ export default function ResultPage() {
         </div>
 
         {
-          currentData.length !== 0
+          currentData
+            && currentData.length !== 0
             ? (
               <Pagination
                 total={currentData.length}

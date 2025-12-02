@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Button from "./Button";
-import { PeriodType, LineList } from "@/types/analysis/types";
-import { PERIOD_MOCK_DATA } from "../../mock/analysis/mock";
+import { PeriodType, LineList, ProductionNameItem, LineStatisticsItem } from "@/types/analysis/types";
 import ProductionLineChart from "./ProductionLineChart";
 import ProductionItemChart from "./ProductionItemChart";
+import { analysisApi } from "@/apis/analysis";
 
 function RollCountCard({ line }: { line: LineList }) {
     return (
@@ -26,16 +26,55 @@ function RollCountCard({ line }: { line: LineList }) {
 export default function ProductionHistory() {
     const [period, setPeriod] = useState<PeriodType>('daily');
     const [currentPage, setCurrentPage] = useState(1);
+    const [startDate, setStartDate] = useState<string>(new Date().toISOString().split('T')[0]);
+    const [endDate, setEndDate] = useState<string>('');
 
-    const [currentData, setCurrentData] = useState(PERIOD_MOCK_DATA.filter((mock) => mock.period === period));
+    const [itemStatisticsData, setItemStatisticsData] = useState<ProductionNameItem[]>([{
+        production_name: '',
+        statistics: [],
+    }]);
+    const [lineStatisticsData, setLineStatisticsData] = useState<LineStatisticsItem[]>([{
+        production_line: {
+            id: 0,
+            name: '',
+            status: "activated",
+        },
+        statistics: [],
+    }]);
+    const [lineListData, setLineListData] = useState<LineList[]>([{
+        id: 0,
+        name: '',
+        total_count: 0,
+        normal_count: 0,
+        defective_count: 0,
+    }]);
 
     const handlePeriodChange = (newPeriod: PeriodType) => {
         setPeriod(newPeriod);
         setCurrentPage(1);
     };
 
+    const handleData = async () => {
+        try {
+            const response = await analysisApi.viewProductionLineSummary(
+                new Date().toISOString().split('T')[0],
+                period
+            );
+
+            if (response && response.status === "SUCCESS") {
+                setStartDate(response.data.range.start.split('T')[0]);
+                setEndDate(response.data.range.end.split('T')[0]);
+                setItemStatisticsData(response.data.production_name_statistics);
+                setLineStatisticsData(response.data.line_statistics);
+                setLineListData(response.data.line_list);
+            }
+        } catch (error) {
+            console.error('handleData error', error);
+        }
+    };
+
     useEffect(() => {
-        setCurrentData(PERIOD_MOCK_DATA.filter((mock) => mock.period === period));
+        handleData();
     }, [period]);
 
     return (
@@ -44,11 +83,11 @@ export default function ProductionHistory() {
                 <h2 className="text-3xl text-black font-bold">생산 현황 히스토리</h2>
                 <div className="flex flex-row gap-4 items-center">
                     <div className="px-6 py-3 bg-white border-2 border-light-gray rounded-full text-black font-semibold">
-                        {currentData[0].range.start}
+                        {startDate}
                     </div>
                     <span className="text-2xl text-medium-gray">—</span>
                     <div className="px-6 py-3 bg-white border-2 border-light-gray rounded-full text-black font-semibold">
-                        {currentData[0].range.end}
+                        {endDate}
                     </div>
                 </div>
             </div>
@@ -66,7 +105,7 @@ export default function ProductionHistory() {
                 </div>
                 <div className="flex flex-row gap-6 items-center justify-between">
                     {
-                        currentData[0].line_list
+                        lineListData
                             .slice((currentPage - 1) * 2, currentPage * 2)
                             .map((line) => (
                                 <RollCountCard key={line.id} line={line} />
@@ -79,22 +118,22 @@ export default function ProductionHistory() {
                 <div className="grid grid-cols-2">
                     <ProductionItemChart
                         title="생산 품목 별 ROLL 총 생산 현황"
-                        data={currentData[0].production_name_statistics}
+                        data={itemStatisticsData}
                         dataType="total"
                     />
                     <ProductionLineChart
                         title="생산라인 별 ROLL 총 생산 현황"
-                        data={currentData[0].line_statistics}
+                        data={lineStatisticsData}
                         dataType="total"
                     />
                     <ProductionItemChart
                         title="생산 품목 별 ROLL 불량품 생산 현황"
-                        data={currentData[0].production_name_statistics}
+                        data={itemStatisticsData}
                         dataType="defective"
                     />
                     <ProductionLineChart
                         title="생산라인 별 ROLL 불량품 생산 현황"
-                        data={currentData[0].line_statistics}
+                        data={lineStatisticsData}
                         dataType="defective"
                     />
                 </div>

@@ -7,7 +7,7 @@ import SemiHeader from "@/components/common/SemiHeader";
 import Layout from "@/components/layout/Layout";
 import { Picker } from "@/components/common/Picker";
 import Pagination from "@/components/common/Pagination";
-import { DETAIL_MOCK_DATA } from "@/mock/analysis/mock";
+// import { DETAIL_MOCK_DATA } from "@/mock/analysis/mock";
 import { ProductionHistoryEachItem_A } from "@/types/analysis/types";
 import { useSelectedImageStore } from "@/store/store";
 import { MOCK_POLYGONS } from "@/mock/mock_polygons";
@@ -101,8 +101,8 @@ export default function AnalysisDataDetailPage() {
     };
 
     useEffect(() => {
-        const selected_data = DETAIL_MOCK_DATA.filter((item) => item.id === Number(id) && item)
-        setData(selected_data[0]);
+        // const selected_data = DETAIL_MOCK_DATA.filter((item) => item.id === Number(id) && item)
+        // setData(selected_data[0]);
     }, []);
 
     useEffect(() => {
