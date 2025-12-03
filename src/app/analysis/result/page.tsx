@@ -8,11 +8,11 @@ import { OptionType, Picker } from "@/components/common/Picker";
 import Layout from "@/components/layout/Layout";
 import MultipleButton from "@/components/common/MultipleButton";
 import { FilterOptions } from "@/types/processing/process-data";
-import { useSortConfigStore } from "@/store/store";
+import { useOptionsStore, useSortConfigStore, useSuccessDeleteStore } from "@/store/store";
 import { ProductionHistoryResult } from "@/types/analysis/types";
 import { analysisApi } from "@/apis/analysis";
-import { learningApi } from "@/apis/learning";
 import { formatDate } from "@/utils/formatDate";
+import Modal from "@/components/modal/Modal";
 
 const HiArrowUp = lazy(() => import('react-icons/hi').then(module => ({
   default: module.HiArrowUp
@@ -28,9 +28,12 @@ const BiDown = lazy(() => import('react-icons/bi').then(module => ({
 
 export default function ResultPage() {
   const router = useRouter();
-  // const isInitialRenderRef = useRef(true); // 페이지 렌더링 여부 감지
 
   const { isDesc, setDesc, setAsc } = useSortConfigStore();
+  const { isModalOpen, setIsModalOpen, setIsModalClose } = useSuccessDeleteStore();
+  const { productOptions, lineOptions, modelOptions, isLoaded, setProductOptions, setLineOptions, setModelOptions, setIsLoaded, clearOptions } = useOptionsStore();
+
+  const [refreshKey, setRefreshKey] = useState(0); // 테이블 새로고침용 키
   const todaysDate = new Date().toISOString().split('T')[0];
   const [filters, setFilters] = useState<FilterOptions>({
     production_name: "전체",
@@ -62,10 +65,6 @@ export default function ResultPage() {
     }
   };
 
-  const handleDeselectAll = () => {
-    setSelectedItems([]);
-  };
-
   const handleToggleItem = (id: number) => {
     setSelectedItems(prev =>
       prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]
@@ -81,9 +80,18 @@ export default function ResultPage() {
     setIsOpenTab(false);
   };
 
-  const handleDeleteSelected = () => {
-    setCurrentData(prev => prev!.filter((data) => !selectedItems.includes(data.id)));
-    setSelectedItems([]);
+  const handleDeleteSelected = async () => {
+    try {
+      const response = await analysisApi.deleteProductionHistories({ ids: selectedItems });
+      if (response === "") {
+        setIsModalOpen(); // 삭제 완료 모달창 띄우기
+        setSelectedItems([]);
+        setRefreshKey(prev => prev + 1);
+        setCurrentPage(1);
+      }
+    } catch (error) {
+      console.error('handleDeleteSelected error', error);
+    }
   };
 
   useEffect(() => {
@@ -110,20 +118,11 @@ export default function ResultPage() {
     setCurrentPage(1);
   }, [itemsPerPage]);
 
-  const [productOptions, setProductOptions] = useState<OptionType[]>([
-    { label: "전체", value: "전체" },
-  ]);
-  const [lineOptions, setLineOptions] = useState<OptionType[]>([
-    { label: "전체", value: "전체" },
-  ]);
   const resultOptions = [
     { label: "전체", value: "전체" },
     { label: "정상", value: "true" },
     { label: "불량", value: "false" }
   ];
-  const [modelOptions, setModelOptions] = useState<OptionType[]>([
-    { label: "전체", value: "전체" },
-  ]);
   const itemsPerPageOptions = [
     { label: "10개", value: "10" },
     { label: "20개", value: "20" },
@@ -131,31 +130,35 @@ export default function ResultPage() {
   ];
 
   const handleOptions = async () => {
+    if (isLoaded) return;
+
     try {
       const [pOptions, lOptions, mOptions] = await Promise.all([
         analysisApi.checkProductionHistoryNames(),
         analysisApi.viewProductionLineName(),
-        learningApi.viewAIModelList(1, 1000)
+        analysisApi.viewAIModelNameList()
       ]);
 
       if (pOptions && pOptions.status === "SUCCESS") {
-        setProductOptions((prev) => ([
-          ...prev,
+        setProductOptions([
+          { label: "전체", value: "전체" },
           ...pOptions.data.items.map((item) => ({ label: item, value: item }))
-        ]));
+        ]);
       }
       if (lOptions && lOptions.status === "SUCCESS") {
-        setLineOptions((prev) => ([
-          ...prev,
+        setLineOptions([
+          { label: "전체", value: "전체" },
           ...lOptions.data.items.map((item) => ({ label: item, value: item }))
-        ]));
+        ]);
       }
       if (mOptions && mOptions.status === "SUCCESS") {
-        setModelOptions((prev) => ([
-          ...prev,
-          ...mOptions.data.results.map((item) => ({ label: item.server_type, value: item.server_type }))
-        ]));
+        setModelOptions([
+          { label: "전체", value: "전체" },
+          ...mOptions.data.items.map((item) => ({ label: item, value: item }))
+        ]);
       }
+
+      setIsLoaded(true);
     } catch (error) {
       console.log('handleOptions api error', error);
     }
@@ -174,7 +177,6 @@ export default function ResultPage() {
         currentPage,
         Number(itemsPerPage)
       );
-      console.log('호출', filters)
 
       if (response && response.status === "SUCCESS") {
         setCurrentData(response.data.results);
@@ -187,11 +189,19 @@ export default function ResultPage() {
 
   useEffect(() => {
     handleOptions();
+
+    // return () => {
+    //   clearOptions();
+    // }
   }, []);
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
+  useEffect(() => {
     handleProductionHistories();
-  }, [filters, currentPage, itemsPerPage, isDesc]);
+  }, [filters, currentPage, itemsPerPage, isDesc, refreshKey]);
 
   return (
     <Layout headerTitle="인공지능 분석">
@@ -280,7 +290,7 @@ export default function ResultPage() {
               type="default"
               title="모두 해제"
               disabled={selectedItems.length === 0}
-              onClick={handleDeselectAll}
+              onClick={() => setSelectedItems([])}
             />
           </div>
 
@@ -293,7 +303,9 @@ export default function ResultPage() {
         </div>
 
         <div className="bg-white border-y-2 border-light-gray overflow-hidden">
-          <table className="w-full">
+          <table
+            className="w-full"
+          >
             <thead className="border-b border-light-gray bg-soft-white py-3 text-center text-base xl:text-lg font-bold text-black">
               <tr>
                 <th className="py-3 w-16">선택</th>
@@ -352,9 +364,12 @@ export default function ResultPage() {
                       <td className="py-3 whitespace-pre-line">
                         {item.production_line.name}
                       </td>
-                      <td className="py-3">{item.mold_no}</td>
+                      <td className="py-3">{item.production_name}</td>
                       <td className="py-3">
-                        {item.defect_rate.toFixed(0)}%<br />(
+                        {
+                          item.defect_rate === Math.trunc(item.defect_rate) ? item.defect_rate : item.defect_rate.toFixed(2)
+                          // item.defect_rate
+                        }%<br />(
                         {item.defective_count.toLocaleString()}/{item.total_count.toLocaleString()})
                       </td>
                       <td
@@ -447,6 +462,18 @@ export default function ResultPage() {
             : (
               <div className="w-full h-[64px]" />
             )
+        }
+
+        {
+          isModalOpen
+            ? <Modal
+              text="데이터를 성공적으로 삭제했습니다."
+              onClick={() => {
+                setIsModalClose();
+              }}
+              onClose={setIsModalClose}
+            />
+            : null
         }
       </div>
     </Layout>

@@ -17,20 +17,21 @@ export interface UploadedListStore {
     setUploadedDataLength: (length: number) => void;
 }
 
+export interface OptionsStore {
+    productOptions: OptionType[];
+    lineOptions: OptionType[];
+    modelOptions: OptionType[];
+    setProductOptions: (options: OptionType[]) => void;
+    setLineOptions: (options: OptionType[]) => void;
+    setModelOptions: (options: OptionType[]) => void;
+    isLoaded: boolean;
+    setIsLoaded: (loaded: boolean) => void;
+    clearOptions: () => void;
+}
+
 /* API */
 // 생산 현황 히스토리 기간 조건
 export type PeriodType = 'daily' | 'weekly' | 'monthly' | 'annually';
-
-export interface DailyRollCostPoint {
-    productionLine: string;
-    normalCount: number;
-    defectCount: number;
-}
-
-export interface ProductionTrendDataPoint {
-    date: string;
-    value: number;
-}
 
 export interface ProductionLineChartData {
     productName: string;
@@ -65,18 +66,20 @@ interface ProductionNameItem {
     production_name: string;
     statistics: StatisticsItem[];
 }
-// 생산 품목 별 ROLL 양불 수량
-interface LineList {
-    id: number;
-    name: string;
-    total_count: number;
-    normal_count: number;
-    defective_count: number;
-}
 
+// interface LineList {
+//     id: number;
+//     production_name: string;
+//     total_count: number;
+//     normal_count: number;
+//     defective_count: number;
+// }
+// 생산 품목 별 ROLL 양불 수량
 interface Items {
     production_name: string;
     total: number;
+    normal: number;
+    defective: number;
 }
 // API: 생산 라인별 통계
 export interface ProductionLineStatisticsData {
@@ -88,7 +91,7 @@ export interface ProductionLineStatisticsData {
     range: DateRange;
     line_statistics: LineStatisticsItem[]; // 라인별 통계
     production_name_statistics: ProductionNameItem[]; // 품목별 통계
-    line_list: LineList[];
+    // line_list: LineList[];
     items: Items[];
     total: number;
 }
@@ -338,4 +341,13 @@ export interface DeleteProductionHistoriesRequest {
 export interface DeleteProductionHistoriesResponse {
     status: "SUCCESS";
     data: string; // "" 예정
+}
+// ----------
+// API: 검수 AI 모델 이름 목록 조회
+export interface AIModelNameListResponse {
+    status: "SUCCESS";
+    data: {
+        items: string[];
+        total: number;
+    }
 }

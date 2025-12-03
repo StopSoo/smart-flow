@@ -1,4 +1,4 @@
-import { UploadedListStore, LineListStore, SortConfigStore } from '@/types/analysis/types';
+import { UploadedListStore, LineListStore, SortConfigStore, OptionsStore } from '@/types/analysis/types';
 import { MemberStore } from '@/types/member/types';
 import { ModalStore } from '@/types/modal/types';
 import { create } from 'zustand';
@@ -57,6 +57,12 @@ export const useSuccessChangeStandardStore = create<ModalStore>((set) => ({
     setIsModalClose: () => set({ isModalOpen: false })
 }))
 
+export const useSuccessDeleteStore = create<ModalStore>((set) => ({
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
 /* 분석 플랫폼 */
 // 메인 탭
 // - 생산라인 가동 현황
@@ -73,11 +79,29 @@ export const useUploadedDataStore = create<UploadedListStore>((set) => ({
     setUploadedDataLength: (length) => set({ uploadedDataLength: length }),
 }))
 // 인공지능 분석 페이지
+// - 데이터 정렬 방식
 export const useSortConfigStore = create<SortConfigStore>((set) => ({
     isDesc: true,
     setDesc: () => set({ isDesc: true }),
     setAsc: () => set({ isDesc: false }),
 }))
+// - 검사 항목 Picker
+export const useOptionsStore = create<OptionsStore>((set) => ({
+    productOptions: [{ label: "전체", value: "전체" }],
+    lineOptions: [{ label: "전체", value: "전체" }],
+    modelOptions: [{ label: "전체", value: "전체" }],
+    isLoaded: false,
+    setProductOptions: (options) => set({ productOptions: options }),
+    setLineOptions: (options) => set({ lineOptions: options }),
+    setModelOptions: (options) => set({ modelOptions: options }),
+    setIsLoaded: (loaded) => set({ isLoaded: loaded }),
+    clearOptions: () => set({
+        productOptions: [{ label: "전체", value: "전체" }],
+        lineOptions: [{ label: "전체", value: "전체" }],
+        modelOptions: [{ label: "전체", value: "전체" }],
+        isLoaded: false,
+    })
+}));
 
 /* 가공 플랫폼 */
 // 데이터 가공 탭

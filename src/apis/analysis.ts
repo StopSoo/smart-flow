@@ -1,4 +1,4 @@
-import { ViewDailyAbnormalRollSuccessResponse, ViewProductionHistoryNamesSuccessResponse, UploadDataRequest, UploadDataSuccessResponse, ProductionHistoryEachItemResponse_A, ProductionLineListResponse, ProductionLineNameResponse, ProductionHistoryResponse, ViewUploadedHistoriesResponse, ProductionLineStatisticsResponse, PeriodType, DeleteProductionHistoriesRequest, DeleteProductionHistoriesResponse, ViewDailyNormalDefectRatioResponse } from "@/types/analysis/types";
+import { ViewDailyAbnormalRollSuccessResponse, ViewProductionHistoryNamesSuccessResponse, UploadDataRequest, UploadDataSuccessResponse, ProductionHistoryEachItemResponse_A, ProductionLineListResponse, ProductionLineNameResponse, ProductionHistoryResponse, ViewUploadedHistoriesResponse, ProductionLineStatisticsResponse, PeriodType, DeleteProductionHistoriesRequest, DeleteProductionHistoriesResponse, ViewDailyNormalDefectRatioResponse, AIModelNameListResponse } from "@/types/analysis/types";
 import axiosInstance from "./axiosInstance";
 import { FailResponse } from "@/types/common/types";
 
@@ -84,10 +84,19 @@ export const analysisApi = {
         classification_result: string | null = null,
         page: number = 1,
         page_size: number = 10,
-        refined: boolean | null = null,
+        refined: string | null = null,
     ): Promise<ProductionHistoryEachItemResponse_A | null> => {
-        const { data } = await axiosInstance.get<ProductionHistoryEachItemResponse_A | FailResponse>
-            (`/api/productions/production-histories/${id}/?classification_result=${classification_result}&page=${page}&page_size=${page_size}&refined=${refined}`);
+        const params: Record<string, any> = {
+            page,
+            page_size,
+        };
+        if (refined !== "전체") params.refined = refined === "true"
+        if (classification_result !== "전체") params.classification_result = classification_result
+
+        const { data } = await axiosInstance.get<ProductionHistoryEachItemResponse_A | FailResponse>(
+            `/api/productions/production-histories/${id}/`,
+            { params }
+        );
 
         if (data.status === "SUCCESS") {
             return data;
@@ -203,6 +212,19 @@ export const analysisApi = {
             return data.data; // "" 예정
         } else {
             console.log('deleteProductionHistories api fail', data.data.message);
+            return null;
+        }
+    },
+    // 검수 AI 모델 이름 목록
+    viewAIModelNameList: async (): Promise<AIModelNameListResponse | null> => {
+        const { data } = await axiosInstance.get<AIModelNameListResponse | FailResponse>(
+            '/api/model_managements/inspection-ai-models/list-names/',
+        );
+
+        if (data.status === "SUCCESS") {
+            return data;
+        } else {
+            console.log('viewAIModelNameList api fail', data.data.message);
             return null;
         }
     },

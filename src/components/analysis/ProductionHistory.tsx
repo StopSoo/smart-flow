@@ -2,21 +2,22 @@
 
 import { useEffect, useState } from "react";
 import Button from "./Button";
-import { PeriodType, LineList, ProductionNameItem, LineStatisticsItem } from "@/types/analysis/types";
+import { PeriodType, ProductionNameItem, LineStatisticsItem, Items } from "@/types/analysis/types";
 import ProductionLineChart from "./ProductionLineChart";
 import ProductionItemChart from "./ProductionItemChart";
 import { analysisApi } from "@/apis/analysis";
+import MultipleButton from "../common/MultipleButton";
 
-function RollCountCard({ line }: { line: LineList }) {
+function RollCountCard({ line }: { line: Items }) {
     return (
-        <div className="w-full border-[4px] border-light-gray p-6 bg-white">
+        <div className="w-full min-w-[600px] border-[4px] border-light-gray p-6 bg-white">
             <div className="flex flex-row items-center justify-center gap-3 mb-4">
-                <h3 className="text-xl text-black font-bold">{line.name}</h3>
+                <h3 className="text-xl text-black font-bold">{line.production_name}</h3>
             </div>
             <div className="flex flex-col items-center gap-2 text-medium-gray">
-                <p>ROLL {line.total_count}개 생산</p>
+                <p>ROLL {line.total}개 생산</p>
                 <p>
-                    양품 {line.normal_count}개 | 불량 {line.defective_count}개
+                    양품 {line.normal}개 | 불량 {line.defective}개
                 </p>
             </div>
         </div>
@@ -26,6 +27,7 @@ function RollCountCard({ line }: { line: LineList }) {
 export default function ProductionHistory() {
     const [period, setPeriod] = useState<PeriodType>('daily');
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
     const [startDate, setStartDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
@@ -41,12 +43,11 @@ export default function ProductionHistory() {
         },
         statistics: [],
     }]);
-    const [lineListData, setLineListData] = useState<LineList[]>([{
-        id: 0,
-        name: '',
-        total_count: 0,
-        normal_count: 0,
-        defective_count: 0,
+    const [lineListData, setLineListData] = useState<Items[]>([{
+        production_name: '',
+        total: 0,
+        normal: 0,
+        defective: 0,
     }]);
 
     const handlePeriodChange = (newPeriod: PeriodType) => {
@@ -66,7 +67,8 @@ export default function ProductionHistory() {
                 setEndDate(response.data.range.end.split('T')[0]);
                 setItemStatisticsData(response.data.production_name_statistics);
                 setLineStatisticsData(response.data.line_statistics);
-                setLineListData(response.data.line_list);
+                setLineListData(response.data.items);
+                setTotalPage(Math.ceil(response.data.items.length / 2));
             }
         } catch (error) {
             console.error('handleData error', error);
@@ -99,18 +101,34 @@ export default function ProductionHistory() {
                 <Button title="Annually" isActive={period === "annually"} onClick={() => handlePeriodChange("annually")} />
             </div>
 
-            <div className="flex flex-col p-6 border-[4px] border-light-gray">
+            <div className="flex flex-col">
                 <div className="flex items-start justify-between mb-6">
                     <h3 className="text-xl text-black font-bold">생산 품목 별 ROLL 양불 수량</h3>
                 </div>
-                <div className="flex flex-row gap-6 items-center justify-between">
-                    {
-                        lineListData
-                            .slice((currentPage - 1) * 2, currentPage * 2)
-                            .map((line) => (
-                                <RollCountCard key={line.id} line={line} />
-                            ))
-                    }
+                <div className="flex flex-row gap-4 justify-between">
+                    <MultipleButton
+                        type="simple"
+                        title="<"
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        className="h-[192px] w-[60px] text-2xl"
+                    />
+                    <div className="flex flex-row gap-6 items-center justify-between">
+                        {
+                            lineListData
+                                .slice((currentPage - 1) * 2, currentPage * 2)
+                                .map((line) => (
+                                    <RollCountCard key={line.production_name} line={line} />
+                                ))
+                        }
+                    </div>
+                    <MultipleButton
+                        type="simple"
+                        title=">"
+                        disabled={currentPage === totalPage}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        className="h-[192px] w-[60px] text-2xl"
+                    />
                 </div>
             </div>
 
