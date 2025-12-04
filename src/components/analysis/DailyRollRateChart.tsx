@@ -9,15 +9,7 @@ export function DailyRollRateChart() {
     const chartHeight = 260;
     const todaysDate = new Date().toISOString().split('T')[0];
 
-    const [data, setData] = useState<ViewDailyNormalDefectRatioLines[]>([{
-        line_id: 0,
-        line_name: '',
-        normal_count: 0,
-        defective_count: 0,
-        exception_count: 0,
-        total_count: 0,
-        defect_rate: 0,
-    }]);
+    const [data, setData] = useState<ViewDailyNormalDefectRatioLines[]>([]);
 
     const handleData = async () => {
         try {
@@ -41,51 +33,64 @@ export function DailyRollRateChart() {
                 <div className="flex items-start justify-between mb-6">
                     <h3 className="text-xl text-black font-bold">생산라인 별 일일 ROLL 양불 비율</h3>
                 </div>
-                {/* TODO: 실제 데이터 들어오면 비율로 변경하기 */}
+
                 <div className="w-full relative mb-3" style={{ height: chartHeight }}>
-                    <div className="absolute h-full left-0 top-0 bottom-8 flex flex-col justify-around text-sm text-medium-gray">
+                    <div className="absolute h-full left-0 top-0 flex flex-col justify-around text-sm text-medium-gray w-20">
+                        {data.map((d, idx) => (
+                            <span key={idx} className="h-8 flex items-center">{d.line_name}</span>
+                        ))}
+                    </div>
+
+                    <div className="w-full pl-22 h-full flex flex-col justify-around">
                         {
-                            data.map((d, idx) =>
-                                <span key={idx}>{d.line_name}</span>)
+                            data.map((item, idx) => {
+                                const normalRate = item.total_count > 0
+                                    ? (item.normal_count / item.total_count) * 100
+                                    : 0;
+                                const defectRate = item.total_count > 0
+                                    ? (item.defective_count / item.total_count) * 100
+                                    : 0;
+
+                                return (
+                                    <div key={idx} className="w-full flex flex-row items-center h-8 relative">
+                                        <div className="absolute left-0 top-0 w-full h-full border-l border-light-gray" />
+                                        <motion.div
+                                            className="h-full bg-point-blue/80 flex items-center justify-center text-xs text-white font-semibold relative z-10"
+                                            initial={{ width: "0%" }}
+                                            animate={{ width: `${normalRate}%` }}
+                                            transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.05 }}
+                                        >
+                                            {normalRate > 5 && `${normalRate.toFixed(1)}%`}
+                                        </motion.div>
+                                        <motion.div
+                                            className="h-full bg-point-orange/70 flex items-center justify-center text-xs text-white font-semibold relative z-10"
+                                            initial={{ width: "0%" }}
+                                            animate={{ width: `${defectRate}%` }}
+                                            transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.05 }}
+                                        >
+                                            {defectRate > 5 && `${defectRate.toFixed(1)}%`}
+                                        </motion.div>
+                                    </div>
+                                );
+                            })
                         }
                     </div>
-                    <div className="w-[786px] z-30 ml-22 h-full flex flex-col justify-around border-l border-light-gray">
-                        {
-                            data.map((item, idx) => (
-                                <div key={idx} className="flex flex-row items-center">
-                                    <motion.div
-                                        className="h-8 bg-point-blue/80"
-                                        style={{ width: `${(item.normal_count / item.total_count) * 50}%` }}
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${(item.normal_count / item.total_count) * 50}%` }}
-                                        transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.05 }}
-                                    />
-                                    <motion.div
-                                        className="h-8 bg-point-orange/70"
-                                        style={{ width: `${(item.defective_count / item.total_count) * 50}%` }}
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${(item.defective_count / item.total_count) * 50}%` }}
-                                        transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.05 }}
-                                    />
-                                </div>
-                            ))
-                        }
-                    </div>
-                    <div className="w-[786px] ml-22 absolute right-2 top-0 h-full flex flex-row justify-between">
-                        <div className="w-[0.1px] bg-white h-full" />
-                        <div className="w-[0.1px] bg-light-gray/50 h-full" />
-                        <div className="w-[0.1px] bg-light-gray/50 h-full" />
-                        <div className="w-[0.1px] bg-light-gray/50 h-full" />
-                        <div className="w-[0.1px] bg-light-gray/50 h-full" />
+
+                    <div className="absolute left-22 top-0 right-0 h-full flex flex-row justify-between pointer-events-none">
+                        <div className="w-[1px] bg-light-gray/50 h-full" />
+                        <div className="w-[1px] bg-light-gray/50 h-full" />
+                        <div className="w-[1px] bg-light-gray/50 h-full" />
+                        <div className="w-[1px] bg-light-gray/50 h-full" />
+                        <div className="w-[1px] bg-transparent h-full" />
                     </div>
                 </div>
 
-                <div className="ml-15 flex flex-row justify-between text-sm text-medium-gray">
-                    <span>0</span>
-                    <span>25</span>
-                    <span>50</span>
-                    <span>75</span>
-                    <span>100</span>
+                <div className="pl-20 flex flex-row justify-between text-sm text-medium-gray">
+                    <span>0%</span>
+                    <span>25%</span>
+                    <span>50%</span>
+                    <span>75%</span>
+                    <span>100%</span>
                 </div>
 
                 <div className="flex justify-center gap-4 mt-4 text-sm">

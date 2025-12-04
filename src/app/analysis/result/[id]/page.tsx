@@ -19,7 +19,6 @@ export default function AnalysisDataDetailPage() {
     const canvasRef = useRef<HTMLCanvasElement>(null); // 비트맵 이미지용 ref 객체
 
     const [data, setData] = useState<ProductionHistoryEachItemData_A>();
-    const [polygonData, setPolygonData] = useState<number[][][]>();
     const itemsPerPage = '10';
     const [currentPage, setCurrentPage] = useState(1);
     const [tab, setTab] = useState(1);
@@ -58,7 +57,7 @@ export default function AnalysisDataDetailPage() {
         setFilters(prev => ({ ...prev, [key]: value }));
     };
 
-    const handleBitmapImage = () => {
+    const handleBitmapImage = (polygonData: number[][][]) => {
         if (!canvasRef.current || !selectedImageUrl) {
             return;
         }
@@ -129,8 +128,7 @@ export default function AnalysisDataDetailPage() {
             const data = await commonApi.viewPolygonData(selectedImageId);
 
             if (data && data.status === "SUCCESS") {
-                console.log(data.data.mask_poly);
-                setPolygonData(data.data.mask_poly);
+                handleBitmapImage(data.data.mask_poly);
             }
         } catch (error) {
             console.log('handlePolygonData error', error);
@@ -142,12 +140,10 @@ export default function AnalysisDataDetailPage() {
     }, [currentPage, tab, filters]);
 
     useEffect(() => {
-        handlePolygonData();
+        if (selectedImageId) {
+            handlePolygonData();
+        }
     }, [selectedImageId]);
-
-    useEffect(() => {
-        handleBitmapImage();
-    }, [selectedImageUrl]);
 
     useEffect(() => {
         return () => {
