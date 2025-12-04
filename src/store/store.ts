@@ -146,13 +146,18 @@ export const useOptionsStore = create<OptionsStore>((set) => ({
 }));
 
 /* 가공 플랫폼 */
-// 데이터 가공 탭
+// 데이터 가공 탭(가공) + 인공지능 분석 상세 조회(분석)
 // - 결과 상세 조회 페이지
 interface SelectedImageStore {
     selectedImageId: string;
     setSelectedImageId: (id: string) => void;
+    selectedImageUrl: string;
+    setSelectedImageUrl: (url: string) => void;
 }
+
 export const useSelectedImageStore = create<SelectedImageStore>((set) => ({
     selectedImageId: '',
     setSelectedImageId: (id) => set({ selectedImageId: id }),
+    selectedImageUrl: '',
+    setSelectedImageUrl: (url) => set({ selectedImageUrl: url }),
 }))

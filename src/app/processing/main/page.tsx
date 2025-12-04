@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Layout from "@/components/layout/Layout";
 import { DailyDataChart } from "@/components/processing/main/DailyDataChart";
@@ -12,17 +12,14 @@ import type {
     InspectionDataPoint,
 } from "@/types/processing/types";
 import { ProductionLines } from "@/components/common/ProductionLines";
+import { analysisApi } from "@/apis/analysis";
 
 export default function MainPage() {
-    // TODO: 생산일자 별 데이터 검수 현황 그래프 시작/종료일자 연동
-    const [startDate, setStartDate] = useState("2025-11-01");
-    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]); // 오늘 날짜
-    // 목데이터
-    // TODO: API 연동
-    const dailyData: DailyDataPoint[] = [
-        { productionLine: "생산라인1", normalCount: 1500000, defectCount: 55500 },
-        { productionLine: "생산라인2", normalCount: 1400000, defectCount: 11700 },
-    ];
+    const todaysDate = new Date().toISOString().split('T')[0];
+    const [dailyNormalDefectData, setDailyNormalDefectData] = useState<DailyDataPoint[]>([]);
+
+    const [startDate, setStartDate] = useState(todaysDate);
+    const [endDate, setEndDate] = useState(todaysDate);
     // 목데이터
     // TODO: API 연동
     const exceptionData: ExceptionDataPoint[] = [
@@ -49,6 +46,31 @@ export default function MainPage() {
         { date: "2025.11.19", inspected: 70, uninspected: 30 },
     ];
 
+    const handleData = async () => {
+        try {
+            const response = await analysisApi.checkDailyNormalDefectRatio(todaysDate);
+
+            if (response && response.status === "SUCCESS") {
+                // 정상/불량 데이터
+                const normalDefectData =
+                    response.data.lines.map((line) => ({
+                        productionLine: line.line_name,
+                        normalCount: line.normal_count,
+                        defectCount: line.defective_count
+                    }));
+                setDailyNormalDefectData(normalDefectData);
+                // 예외 데이터
+                // TODO: 여기부터 !!
+            }
+        } catch (error) {
+            console.error('handleData error', error);
+        }
+    };
+
+    useEffect(() => {
+        handleData();
+    }, []);
+
     return (
         <Layout headerTitle="AI 컨택트 핀 가공 플랫폼">
             <div className="flex flex-1 fixed top-[140px] left-[242px] w-[calc(100%-242px)] z-50">
@@ -56,7 +78,7 @@ export default function MainPage() {
             </div>
             <div className="flex flex-col flex-1 pt-[310px]">
                 <div className="grid grid-cols-2 gap-6 p-6">
-                    <DailyDataChart data={dailyData} />
+                    <DailyDataChart data={dailyNormalDefectData} />
                     <ExceptionDataChart data={exceptionData} />
                 </div>
 

@@ -1,4 +1,4 @@
-import { ViewDailyAbnormalRollSuccessResponse, ViewProductionHistoryNamesSuccessResponse, UploadDataRequest, UploadDataSuccessResponse, ProductionHistoryEachItemResponse_A, ProductionLineListResponse, ProductionLineNameResponse, ProductionHistoryResponse, ViewUploadedHistoriesResponse, ProductionLineStatisticsResponse, PeriodType, DeleteProductionHistoriesRequest, DeleteProductionHistoriesResponse, ViewDailyNormalDefectRatioResponse, AIModelNameListResponse } from "@/types/analysis/types";
+import { ViewDailyAbnormalRollSuccessResponse, ViewProductionHistoryNamesSuccessResponse, UploadDataRequest, UploadDataSuccessResponse, ProductionHistoryEachItemResponse_A, ProductionLineListResponse, ProductionLineNameResponse, ProductionHistoryResponse, ViewUploadedHistoriesResponse, ProductionLineStatisticsResponse, PeriodType, DeleteProductionHistoriesRequest, DeleteProductionHistoriesResponse, ViewDailyNormalDefectRatioResponse, AIModelNameListResponse, PolygonDataResponse } from "@/types/analysis/types";
 import axiosInstance from "./axiosInstance";
 import { FailResponse } from "@/types/common/types";
 
@@ -225,6 +225,21 @@ export const analysisApi = {
             return data;
         } else {
             console.log('viewAIModelNameList api fail', data.data.message);
+            return null;
+        }
+    },
+    // 이미지 폴리곤 데이터 조회
+    viewPolygonData: async (
+        dataset_id: string
+    ): Promise<PolygonDataResponse | null> => {
+        const { data } = await axiosInstance.get<PolygonDataResponse | FailResponse>(
+            `/api/productions/production-histories/dataset/${dataset_id}/mask-poly/`
+        );
+
+        if (data.status === "SUCCESS") {
+            return data;
+        } else {
+            console.log('viewPolygonData api fail', data.data.message);
             return null;
         }
     },

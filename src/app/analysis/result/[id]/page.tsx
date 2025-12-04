@@ -9,7 +9,6 @@ import { Picker } from "@/components/common/Picker";
 import Pagination from "@/components/common/Pagination";
 import { ProductionHistoryEachItemData_A } from "@/types/analysis/types";
 import { useSelectedImageStore } from "@/store/store";
-import { MOCK_POLYGONS } from "@/mock/mock_polygons";
 import { analysisApi } from "@/apis/analysis";
 import { formatDate } from "@/utils/formatDate";
 
@@ -19,11 +18,17 @@ export default function AnalysisDataDetailPage() {
     const canvasRef = useRef<HTMLCanvasElement>(null); // 비트맵 이미지용 ref 객체
 
     const [data, setData] = useState<ProductionHistoryEachItemData_A>();
+    const [polygonData, setPolygonData] = useState<number[][][]>();
     const itemsPerPage = '10';
     const [currentPage, setCurrentPage] = useState(1);
     const [tab, setTab] = useState(1);
 
-    const { selectedImageId, setSelectedImageId } = useSelectedImageStore();
+    const {
+        selectedImageId,
+        setSelectedImageId,
+        selectedImageUrl,
+        setSelectedImageUrl,
+    } = useSelectedImageStore();
 
     const [filters, setFilters] = useState<{
         classification_result: string,
@@ -51,19 +56,18 @@ export default function AnalysisDataDetailPage() {
     const handleFilterChange = (key: keyof { classification_result: string, refined: string, label: string }, value: string) => {
         setFilters(prev => ({ ...prev, [key]: value }));
     };
-    // TODO: API 연동 시 수정
+
     const handleBitmapImage = () => {
-        if (!canvasRef.current) {
+        if (!canvasRef.current || !selectedImageUrl) {
             return;
         }
 
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
-        if (!ctx) {
-            return;
-        }
+        if (!ctx) return;
 
         const image = new window.Image();
+        image.crossOrigin = "anonymous"; // CORS 설정
         image.onload = () => {
             canvas.width = image.width;
             canvas.height = image.height;
@@ -73,9 +77,9 @@ export default function AnalysisDataDetailPage() {
 
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
-            // TODO: INITIAL_MASK_POLY -> 라벨 데이터로 변경
-            if (selectedImageId !== '') {
-                MOCK_POLYGONS[selectedImageId].forEach((polygon) => {
+
+            if (polygonData && polygonData.length > 0) {
+                polygonData.forEach((polygon) => {
                     if (polygon.length > 0) {
                         ctx.beginPath();
                         ctx.moveTo(polygon[0][0], polygon[0][1]);
@@ -98,20 +102,36 @@ export default function AnalysisDataDetailPage() {
             }
         };
 
-        image.src = `/assets/mock_data_images/${selectedImageId}.bmp`;
+        image.onerror = (error) => {
+            console.error('이미지 로드 실패', error);
+        };
+
+        image.src = selectedImageUrl;
     };
 
     const handleData = async () => {
         try {
-            const response = await analysisApi.viewProductionHistoryItem(
+            const data = await analysisApi.viewProductionHistoryItem(
                 id, filters.classification_result, currentPage, Number(itemsPerPage), filters.refined
             );
-            console.log(filters);
-            if (response && response.status === "SUCCESS") {
-                setData(response.data);
+
+            if (data && data.status === "SUCCESS") {
+                setData(data.data);
             }
         } catch (error) {
             console.log('handleData error', error);
+        }
+    };
+
+    const handlePolygonData = async () => {
+        try {
+            const data = await analysisApi.viewPolygonData(selectedImageId);
+
+            if (data && data.status === "SUCCESS") {
+                setPolygonData(data.data.mask_poly);
+            }
+        } catch (error) {
+            console.log('handlePolygonData error', error);
         }
     };
 
@@ -120,14 +140,19 @@ export default function AnalysisDataDetailPage() {
     }, [currentPage, tab, filters]);
 
     useEffect(() => {
-        handleBitmapImage();
+        handlePolygonData();
     }, [selectedImageId]);
+
+    useEffect(() => {
+        handleBitmapImage();
+    }, [selectedImageUrl]);
 
     useEffect(() => {
         return () => {
             setSelectedImageId('');
+            setSelectedImageUrl('');
         }
-    }, [setSelectedImageId]);
+    }, [setSelectedImageId, setSelectedImageUrl]);
 
     return (
         <Layout headerTitle="인공지능 분석">
@@ -279,10 +304,12 @@ export default function AnalysisDataDetailPage() {
                                                     <tr
                                                         key={String((currentPage - 1) * Number(itemsPerPage) + idx) + '_' + item.id}
                                                         className={`h-[55px] text-base border-b border-light-gray cursor-pointer ${selectedImageId === item.id ? "bg-point-blue/50 text-white" : "bg-white hover:bg-light-gray/30"}`}
-                                                        onClick={() => setSelectedImageId(item.id)}
+                                                        onClick={() => {
+                                                            setSelectedImageId(item.id);
+                                                            setSelectedImageUrl(item.image_url);
+                                                        }}
                                                     >
                                                         <td className="px-6 py-3 text-center">{(currentPage - 1) * Number(itemsPerPage) + idx + 1}</td>
-                                                        {/* TODO: 이미지 이름 다시 확인해서 넣기 */}
                                                         <td className="px-4 py-3">{item.dataset_id}</td>
                                                         <td className={`px-4 py-3 font-bold text-center ${item.classification_result === "불량" ? "text-point-red" : selectedImageId === item.id ? "text-white" : "text-medium-gray"} `}>{item.classification_result}</td>
                                                         <td className="px-4 py-3 text-center">{item.refined_at !== null ? "O" : "X"}</td>
@@ -337,7 +364,7 @@ export default function AnalysisDataDetailPage() {
                     <div className="min-w-[500px] flex flex-col gap-6 pt-[74px]">
                         <div className="h-[510px] border-[4px] border-light-gray bg-soft-white flex items-center justify-center p-6">
                             {
-                                selectedImageId === '' ? (
+                                selectedImageUrl === '' ? (
                                     <p className="text-medium-gray text-xl">
                                         이미지를 선택해주세요
                                     </p>

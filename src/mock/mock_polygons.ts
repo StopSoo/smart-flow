@@ -1,3 +1,4 @@
+// TODO: 다른 곳에서 쓰고 있길래 안 지움. 추후 삭제 필요
 export const MOCK_POLYGONS: Record<string, number[][][]> = {
     "Image19700101_1002160146631": [
         [

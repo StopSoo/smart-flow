@@ -18,6 +18,7 @@ export function DailyRollRateChart() {
         total_count: 0,
         defect_rate: 0,
     }]);
+
     const handleData = async () => {
         try {
             const response = await analysisApi.checkDailyNormalDefectRatio(todaysDate);

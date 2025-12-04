@@ -113,6 +113,7 @@ export interface ProductionItemListResponse {
 // API: 생산 이력 상세 조회 (단건)
 interface DatasetItem {
     id: string;
+    dataset_id: string;
     image_url: string;
     classification_result: string; // AI 결과
     refined_at: string | null; // 가공 여부
@@ -341,5 +342,13 @@ export interface AIModelNameListResponse {
     data: {
         items: string[];
         total: number;
+    }
+}
+// ---------
+// API: 이미지 폴리곤 데이터 조회
+export interface PolygonDataResponse {
+    status: "SUCCESS";
+    data: {
+        mask_poly: number[][][];
     }
 }

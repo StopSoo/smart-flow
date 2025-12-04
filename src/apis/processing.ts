@@ -12,9 +12,14 @@ export const processingApi = {
         refined: string | null = null,
         id: number,
     ) => {
-        const { data } = await axiosInstance.get<ProductionHistoryEachItemResponse_P | FailResponse>
-            (`/api/productions/production-histories/${id}/poly/
-            ?classification_result=${classification_result}&page=${page}&page_size=${page_size}&refined=${refined}`);
+        const { data } = await axiosInstance.get<ProductionHistoryEachItemResponse_P | FailResponse>(
+            `/api/productions/production-histories/${id}/poly/`,
+            {
+                params: {
+                    classification_result, page, page_size, refined
+                }
+            }
+        );
 
         if (data.status === "SUCCESS") {
             return data;
