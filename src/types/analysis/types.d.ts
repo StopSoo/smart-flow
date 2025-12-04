@@ -66,14 +66,6 @@ interface ProductionNameItem {
     production_name: string;
     statistics: StatisticsItem[];
 }
-
-// interface LineList {
-//     id: number;
-//     production_name: string;
-//     total_count: number;
-//     normal_count: number;
-//     defective_count: number;
-// }
 // 생산 품목 별 ROLL 양불 수량
 interface Items {
     production_name: string;
@@ -91,7 +83,6 @@ export interface ProductionLineStatisticsData {
     range: DateRange;
     line_statistics: LineStatisticsItem[]; // 라인별 통계
     production_name_statistics: ProductionNameItem[]; // 품목별 통계
-    // line_list: LineList[];
     items: Items[];
     total: number;
 }
@@ -122,7 +113,7 @@ export interface ProductionItemListResponse {
 // API: 생산 이력 상세 조회 (단건)
 interface DatasetItem {
     id: string;
-    dataset_id: string;
+    image_url: string;
     classification_result: string; // AI 결과
     refined_at: string | null; // 가공 여부
     created_at: string;
@@ -212,6 +203,7 @@ export interface ViewDailyNormalDefectRatioLines {
     line_name: string;
     normal_count: number;
     defective_count: number;
+    exception_count: number;
     total_count: number;
     defect_rate: number;
 }

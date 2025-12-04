@@ -11,6 +11,7 @@ interface DatasetItem {
 export interface ProductionHistoryEachItem_P {
     id: number;
     production_name: string;
+    applied_model: string;
     mold_no: string;
     production_line: {
         id: number;

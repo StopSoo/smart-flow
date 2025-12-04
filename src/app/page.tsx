@@ -3,13 +3,15 @@
 import { useState, lazy, Suspense, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { AxiosError } from "axios";
 
 import Input from "@/components/common/Input";
 import BasicButton from "@/components/common/BasicButton";
-import { useLoginSuccessStore, useMemberStore } from "@/store/store";
+import { useLoginSuccessStore, useMemberStore, useNoUserStore, usePendingAccountStore, useUnactivatedAccountStore, useWrongPwStore } from "@/store/store";
 import Modal from "@/components/modal/Modal";
 import { memberApi } from "@/apis/member";
 import { IssueTokenRequest } from "@/types/member/types";
+import { FailResponse } from "@/types/common/types";
 
 const BiInfo = lazy(() => import('react-icons/bi').then(module => ({
   default: module.BiInfoCircle
@@ -21,6 +23,11 @@ export default function LoginPage() {
 
   const { setUsername, isLogin, setIsLogin } = useMemberStore();
   const { isModalOpen: isSuccessModalOpen, setIsModalOpen: setIsSuccessModalOpen, setIsModalClose: setIsSuccessModalClose } = useLoginSuccessStore();
+  const { isModalOpen: isNoUserModalOpen, setIsModalOpen: setIsNoUserModalOpen, setIsModalClose: setIsNoUserModalClose } = useNoUserStore();
+  const { isModalOpen: isWrongPwModalOpen, setIsModalOpen: setIsWrongPwModalOpen, setIsModalClose: setIsWrongPwModalClose } = useWrongPwStore();
+  const { isModalOpen: isPendingModalOpen, setIsModalOpen: setIsPendingModalOpen, setIsModalClose: setIsPendingModalClose } = usePendingAccountStore();
+  const { isModalOpen: isUnactivatedModalOpen, setIsModalOpen: setIsUnactivatedModalOpen, setIsModalClose: setIsUnactivatedModalClose } = useUnactivatedAccountStore();
+
 
   const [formData, setFormData] = useState<IssueTokenRequest>({
     username: "",
@@ -45,8 +52,23 @@ export default function LoginPage() {
         setIsClickButton(false);
       }
     } catch (error) {
-      console.error('login error', error);
+      const err = error as AxiosError<FailResponse>;
+      console.error('login error', err);
       setIsLogin(false);
+
+      if (err.response?.status === 400) {
+        const errorMessage = err.response.data.data.message;
+        if (errorMessage === "해당하는 유저가 없습니다.") {
+          setIsNoUserModalOpen();
+        } else if (errorMessage === "비밀번호가 일치하지 않습니다.") {
+          setIsWrongPwModalOpen();
+        } else if (errorMessage === "PENDING 상태의 계정은 접근할 수 없습니다.") {
+          setIsPendingModalOpen();
+        } else if (errorMessage === "비활성화된 계정은 접근할 수 없습니다.") {
+          setIsUnactivatedModalOpen();
+        }
+        return errorMessage;
+      }
     }
   };
 
@@ -135,6 +157,46 @@ export default function LoginPage() {
               router.push('/analysis/main');
             }}
             onClose={setIsSuccessModalClose}
+          />
+          : null
+      }
+
+      {
+        isNoUserModalOpen
+          ? <Modal
+            text="입력한 정보와 일치하는 회원이 없습니다."
+            onClick={() => setIsNoUserModalClose()}
+            onClose={setIsNoUserModalClose}
+          />
+          : null
+      }
+
+      {
+        isWrongPwModalOpen
+          ? <Modal
+            text="비밀번호가 틀렸습니다."
+            onClick={() => setIsWrongPwModalClose()}
+            onClose={setIsWrongPwModalClose}
+          />
+          : null
+      }
+
+      {
+        isPendingModalOpen
+          ? <Modal
+            text={`PENDING 상태의 계정은 접근할 수 없습니다.\n관리자에게 문의하세요.`}
+            onClick={() => setIsPendingModalClose()}
+            onClose={setIsPendingModalClose}
+          />
+          : null
+      }
+
+      {
+        isUnactivatedModalOpen
+          ? <Modal
+            text={`비활성화된 계정은 접근할 수 없습니다.\n관리자에게 문의하세요.`}
+            onClick={() => setIsUnactivatedModalClose()}
+            onClose={setIsUnactivatedModalClose}
           />
           : null
       }

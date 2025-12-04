@@ -11,7 +11,6 @@ import { Picker } from "@/components/common/Picker";
 import Pagination from "@/components/common/Pagination";
 import MultipleButton from "@/components/common/MultipleButton";
 import { MOCK_DATA } from "@/mock/processing/mock";
-// import { INITIAL_MASK_POLY } from "@/components/processing/process-data/EditImage";
 import { ProductionHistoryEachItem_P } from "@/types/processing/process-data";
 import { MOCK_POLYGONS } from "@/mock/mock_polygons";
 import { useSelectedImageStore } from "@/store/store";

@@ -33,7 +33,49 @@ export const useLoginSuccessStore = create<ModalStore>((set) => ({
     setIsModalClose: () => set({ isModalOpen: false })
 }))
 
+export const useNoUserStore = create<ModalStore>((set) => ({ // 해당하는 유저가 없습니다
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
+export const useWrongPwStore = create<ModalStore>((set) => ({ // 비밀번호가 일치하지 않습니다
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
+export const usePendingAccountStore = create<ModalStore>((set) => ({ // PENDING 상태의 계정은 접근할 수 없습니다
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
+export const useUnactivatedAccountStore = create<ModalStore>((set) => ({ // 비활성화된 계정은 접근할 수 없습니다
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
 export const useSignupSuccessStore = create<ModalStore>((set) => ({
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
+export const useOnlyFourPwStore = create<ModalStore>((set) => ({ // 비밀번호는 숫자 4자리만 가능합니다
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
+export const useExistedUsernameStore = create<ModalStore>((set) => ({ // 이미 존재하는 사용자명입니다
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
+
+export const useNoBranchNameStore = create<ModalStore>((set) => ({ // 해당하는 사업소 이름이 없습니다
     isModalOpen: false,
     setIsModalOpen: () => set({ isModalOpen: true }),
     setIsModalClose: () => set({ isModalOpen: false })

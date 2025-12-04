@@ -14,17 +14,16 @@ export function DailyRollRateChart() {
         line_name: '',
         normal_count: 0,
         defective_count: 0,
+        exception_count: 0,
         total_count: 0,
         defect_rate: 0,
     }]);
-    const [maxValue, setMaxValue] = useState<number>(0);
     const handleData = async () => {
         try {
             const response = await analysisApi.checkDailyNormalDefectRatio(todaysDate);
 
             if (response && response.status === "SUCCESS") {
                 setData(response.data.lines);
-                setMaxValue(Math.max(...response.data.lines.map((d) => d.total_count)));
             }
         } catch (error) {
             console.error('handleData error', error);

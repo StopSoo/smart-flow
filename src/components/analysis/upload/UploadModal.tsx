@@ -37,7 +37,10 @@ export default function UploadModal({ type, onClose }: UploadModalProps) {
                     message: '옵션이 선택되지 않았습니다.'
                 };
             default:
-                return null;
+                return {
+                    color: 'bg-point-red',
+                    message: '업로드에 실패했습니다.'
+                };;
         }
     };
 

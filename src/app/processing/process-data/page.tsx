@@ -313,7 +313,6 @@ export default function ProcessDataPage() {
                         {item.defective_count}/{item.defective_count + item.normal_count}
                         )
                       </td>
-                      {/* TODO: API 명세 보고 해야 함 */}
                       <td
                         className={`px-4 py-3 font-bold ${item.is_abnormal ? "text-point-red" : ""
                           }`}
@@ -321,8 +320,7 @@ export default function ProcessDataPage() {
                         {item.is_abnormal ? "불량" : "정상"}
                       </td>
                       <td className="px-4 py-3">
-                        {/* TODO: 목데이터라서 API 연동 시 수정해야 함 */}
-                        {item.applied_model !== null ? item.applied_model : "covi_seg_00001"}
+                        {item.applied_model}
                       </td>
                     </tr>
                   ))

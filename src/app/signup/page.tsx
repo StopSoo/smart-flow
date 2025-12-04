@@ -9,8 +9,10 @@ import BasicButton from "@/components/common/BasicButton";
 import { isValidBranchName, isValidHeadqurter, isValidPw, isValidPwConfirm, isValidUsername } from "@/utils/regEx";
 import { memberApi } from "@/apis/member";
 import { RegisterRequest, SignupFormData } from "@/types/member/types";
-import { useSignupSuccessStore } from "@/store/store";
+import { useExistedUsernameStore, useNoBranchNameStore, useOnlyFourPwStore, useSignupSuccessStore } from "@/store/store";
 import Modal from "@/components/modal/Modal";
+import { FailResponse } from "@/types/common/types";
+import { AxiosError } from "axios";
 
 const BiInfo = lazy(() => import('react-icons/bi').then(module => ({
   default: module.BiInfoCircle
@@ -35,6 +37,9 @@ export default function SignupPage() {
   const isSignupButtonActive = isPassUsername && isPassPw && isPassPwConfirm && isPassHeadquarter && isPassBranchName;
 
   const { isModalOpen, setIsModalOpen, setIsModalClose } = useSignupSuccessStore();
+  const { isModalOpen: isOnlyFourPwModalOpen, setIsModalOpen: setIsOnlyFourPwModalOpen, setIsModalClose: setIsOnlyFourPwModalClose } = useOnlyFourPwStore();
+  const { isModalOpen: isExistedUsernameModalOpen, setIsModalOpen: setIsExistedUsernameModalOpen, setIsModalClose: setIsExistedUsernameModalClose } = useExistedUsernameStore();
+  const { isModalOpen: isNoBranchNameModalOpen, setIsModalOpen: setIsNoBranchNameModalOpen, setIsModalClose: setIsNoBranchNameModalClose } = useNoBranchNameStore();
 
   const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,8 +59,21 @@ export default function SignupPage() {
         setIsModalOpen();
       }
     } catch (error) {
+      const err = error as AxiosError<FailResponse>;
       console.error('signup error', error);
-      setIsModalOpen();
+
+      if (err.response?.status === 400) {
+        const errorMessage = err.response.data.data.message;
+
+        if (errorMessage === "비밀번호는 숫자 4자리만 가능합니다.") {
+          setIsOnlyFourPwModalOpen();
+        } else if (errorMessage === "이미 존재하는 사용자명입니다.") {
+          setIsExistedUsernameModalOpen();
+        } else if (errorMessage === "해당하는 사업소 이름이 없습니다.") {
+          setIsNoBranchNameModalOpen();
+        }
+        return errorMessage;
+      }
     } finally {
       setIsSignupButtonClick(false);
     }
@@ -286,6 +304,36 @@ export default function SignupPage() {
               router.push('/');
             }}
             onClose={setIsModalClose}
+          />
+          : null
+      }
+
+      {
+        isOnlyFourPwModalOpen
+          ? <Modal
+            text="비밀번호는 숫자 4자리만 가능합니다."
+            onClick={() => setIsOnlyFourPwModalClose()}
+            onClose={setIsOnlyFourPwModalClose}
+          />
+          : null
+      }
+
+      {
+        isExistedUsernameModalOpen
+          ? <Modal
+            text="이미 존재하는 사용자명입니다."
+            onClick={() => setIsExistedUsernameModalClose()}
+            onClose={setIsExistedUsernameModalClose}
+          />
+          : null
+      }
+
+      {
+        isNoBranchNameModalOpen
+          ? <Modal
+            text="해당하는 사업소 이름이 없습니다."
+            onClick={() => setIsNoBranchNameModalClose()}
+            onClose={setIsNoBranchNameModalClose}
           />
           : null
       }

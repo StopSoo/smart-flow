@@ -24,7 +24,7 @@ export const analysisApi = {
         date: string,
     ) => {
         const { data } = await axiosInstance.get<ViewDailyNormalDefectRatioResponse | FailResponse>
-            (`/api/productions/production-histories/daily-normal-defect-ratio-by-branch/?${date}`);
+            (`/api/productions/production-histories/daily-normal-defect-ratio-by-branch/?date=${date}`);
 
         if (data.status === "SUCCESS") {
             return data;

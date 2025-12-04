@@ -59,11 +59,11 @@ export default function UploadPage() {
                 setModalType('success');
                 setRefreshKey(prev => prev + 1);
             } else {
-                setModalType('error-format');
+                setModalType(null);
             }
         } catch (error) {
             console.error('handleUpload error', error);
-            setModalType('error-format');
+            setModalType(null);
         } finally {
             setIsUploading(false);
         }
