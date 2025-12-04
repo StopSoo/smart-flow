@@ -3,8 +3,8 @@
 import { ProductionLineListItem } from "@/types/analysis/types";
 import MultipleButton from "./MultipleButton";
 import { useEffect, useState } from "react";
-import { analysisApi } from "@/apis/analysis";
 import { useProductionLineStore } from "@/store/store";
+import { commonApi } from "@/apis/common";
 
 // 하나의 생산라인 정보
 function ProductionLineCard({ line }: { line: ProductionLineListItem }) {
@@ -36,7 +36,7 @@ export function ProductionLines() {
 
   const handleProductionLinelist = async () => {
     try {
-      const response = await analysisApi.viewProductionLineList();
+      const response = await commonApi.viewProductionLineList();
 
       if (response !== null && response.status === "SUCCESS") {
         setLineList(response.data.items);

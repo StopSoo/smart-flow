@@ -1,4 +1,4 @@
-import type { InspectionDataPoint } from "@/types/processing/types";
+import type { DataInspectionData } from "@/types/processing/types";
 import { Picker } from "@/components/common/Picker";
 import { motion } from "framer-motion";
 
@@ -8,14 +8,16 @@ export function InspectionChart({
   endDate,
   onStartDateChange,
   onEndDateChange,
+  onDateChange,
 }: {
-  data: InspectionDataPoint[];
+  data: DataInspectionData[];
   startDate: string;
   endDate: string;
   onStartDateChange: (date: string) => void;
   onEndDateChange: (date: string) => void;
+  onDateChange: () => void;
 }) {
-  const maxValue = Math.max(...data.map((d) => d.inspected + d.uninspected));
+  const maxValue = Math.max(...data.map((d) => d.refined_count + d.exception_count));
   const chartHeight = 300;
 
   return (
@@ -49,19 +51,19 @@ export function InspectionChart({
           {
             data.map((item, idx) => (
               <div key={idx} className="flex flex-col items-center gap-2">
-                <div className="flex flex-col ml-2 items-center h-[250px] justify-end">
+                <div className="flex flex-col ml-2 items-center h-[270px] justify-end">
                   <motion.div
                     className="w-8 bg-point-green/80"
-                    style={{ height: `${(item.inspected / maxValue) * 50}%` }}
+                    style={{ height: `${(item.refined_count / maxValue) * 50}%` }}
                     initial={{ height: 0 }}
-                    animate={{ height: `${(item.inspected / maxValue) * 50}%` }}
+                    animate={{ height: `${(item.refined_count / maxValue) * 50}%` }}
                     transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.05 }}
                   />
                   <motion.div
                     className="w-8 bg-point-blue/70"
-                    style={{ height: `${(item.uninspected / maxValue) * 50}%` }}
+                    style={{ height: `${(item.exception_count / maxValue) * 50}%` }}
                     initial={{ height: 0 }}
-                    animate={{ height: `${(item.uninspected / maxValue) * 50}%` }}
+                    animate={{ height: `${(item.exception_count / maxValue) * 50}%` }}
                     transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.05 }}
                   />
                 </div>

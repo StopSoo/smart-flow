@@ -23,7 +23,7 @@ export function DailyDataChart({ data }: { data: DailyDataPoint[] }) {
           {
             data.map((item, idx) => (
               <div key={idx} className="flex flex-col items-center gap-2 flex-1 mb-2">
-                <div className="flex gap-1 items-end h-[250px]">
+                <div className="flex gap-1 items-end h-[220px]">
                   <motion.div
                     className="w-12 bg-point-orange"
                     style={{ height: `${(item.normalCount / (maxValue * 2)) * 100}%` }}

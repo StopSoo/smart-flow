@@ -4,15 +4,16 @@ import { useRouter } from "next/navigation";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 import Pagination from "@/components/common/Pagination";
-import { OptionType, Picker } from "@/components/common/Picker";
+import { Picker } from "@/components/common/Picker";
 import Layout from "@/components/layout/Layout";
 import MultipleButton from "@/components/common/MultipleButton";
 import { FilterOptions } from "@/types/processing/process-data";
 import { useOptionsStore, useSortConfigStore, useSuccessDeleteStore } from "@/store/store";
-import { ProductionHistoryResult } from "@/types/analysis/types";
 import { analysisApi } from "@/apis/analysis";
+import { commonApi } from "@/apis/common";
 import { formatDate } from "@/utils/formatDate";
 import Modal from "@/components/modal/Modal";
+import { ProductionHistoryResult } from "@/types/common/types";
 
 const HiArrowUp = lazy(() => import('react-icons/hi').then(module => ({
   default: module.HiArrowUp
@@ -82,7 +83,7 @@ export default function ResultPage() {
 
   const handleDeleteSelected = async () => {
     try {
-      const response = await analysisApi.deleteProductionHistories({ ids: selectedItems });
+      const response = await commonApi.deleteProductionHistories({ ids: selectedItems });
       if (response === "") {
         setIsModalOpen(); // 삭제 완료 모달창 띄우기
         setSelectedItems([]);
@@ -136,7 +137,7 @@ export default function ResultPage() {
       const [pOptions, lOptions, mOptions] = await Promise.all([
         analysisApi.checkProductionHistoryNames(),
         analysisApi.viewProductionLineName(),
-        analysisApi.viewAIModelNameList()
+        commonApi.viewAIModelNameList()
       ]);
 
       if (pOptions && pOptions.status === "SUCCESS") {
@@ -166,7 +167,7 @@ export default function ResultPage() {
 
   const handleProductionHistories = async () => {
     try {
-      const response = await analysisApi.viewProductionHistories(
+      const response = await commonApi.viewProductionHistories(
         filters.applied_model,
         filters.start_created_at,
         filters.end_created_at,

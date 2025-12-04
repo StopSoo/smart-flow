@@ -21,7 +21,7 @@ export function ExceptionDataChart({ data }: { data: ExceptionDataPoint[] }) {
           {
             data.map((item, idx) => (
               <div key={idx} className="flex flex-col items-center gap-2 flex-1 mb-2">
-                <div className="flex items-end h-[250px]">
+                <div className="flex items-end h-[220px]">
                   <motion.div
                     className="w-16 bg-medium-gray/80"
                     style={{ height: `${(item.count / 150) * 100}%` }}

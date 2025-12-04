@@ -1,7 +1,7 @@
 'use client';
 
-import { analysisApi } from "@/apis/analysis";
-import { ViewDailyNormalDefectRatioLines } from "@/types/analysis/types";
+import { commonApi } from "@/apis/common";
+import { ViewDailyNormalDefectRatioLines } from "@/types/common/types";
 import { motion } from "framer-motion";
 import { Suspense, useEffect, useState } from "react";
 
@@ -21,7 +21,7 @@ export function DailyRollRateChart() {
 
     const handleData = async () => {
         try {
-            const response = await analysisApi.checkDailyNormalDefectRatio(todaysDate);
+            const response = await commonApi.checkDailyNormalDefectRatio(todaysDate);
 
             if (response && response.status === "SUCCESS") {
                 setData(response.data.lines);

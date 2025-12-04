@@ -11,6 +11,7 @@ import { ProductionHistoryEachItemData_A } from "@/types/analysis/types";
 import { useSelectedImageStore } from "@/store/store";
 import { analysisApi } from "@/apis/analysis";
 import { formatDate } from "@/utils/formatDate";
+import { commonApi } from "@/apis/common";
 
 export default function AnalysisDataDetailPage() {
     const params = useParams();
@@ -125,9 +126,10 @@ export default function AnalysisDataDetailPage() {
 
     const handlePolygonData = async () => {
         try {
-            const data = await analysisApi.viewPolygonData(selectedImageId);
+            const data = await commonApi.viewPolygonData(selectedImageId);
 
             if (data && data.status === "SUCCESS") {
+                console.log(data.data.mask_poly);
                 setPolygonData(data.data.mask_poly);
             }
         } catch (error) {

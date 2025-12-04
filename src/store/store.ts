@@ -104,6 +104,12 @@ export const useSuccessDeleteStore = create<ModalStore>((set) => ({
     setIsModalOpen: () => set({ isModalOpen: true }),
     setIsModalClose: () => set({ isModalOpen: false })
 }))
+// 가공 플랫폼 - 생산일자 별 데이터 검수 현황 날짜 변경 컴포넌트
+export const useNoChangeDateStore = create<ModalStore>((set) => ({
+    isModalOpen: false,
+    setIsModalOpen: () => set({ isModalOpen: true }),
+    setIsModalClose: () => set({ isModalOpen: false })
+}))
 
 /* 분석 플랫폼 */
 // 메인 탭

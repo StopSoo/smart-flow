@@ -1,4 +1,4 @@
-import { MaskPolyResponse, UpdatedPolygonResponse } from "@/types/processing/types"
+import { DataInspectionResponse, MaskPolyResponse, UpdatedPolygonResponse } from "@/types/processing/types"
 import axiosInstance from "./axiosInstance"
 import { FailResponse } from "@/types/common/types"
 import { ProductionHistoryEachItemResponse_P } from "@/types/processing/process-data";
@@ -57,6 +57,25 @@ export const processingApi = {
             return data;
         } else {
             console.log('viewMaskPolyData api fail', data.data.message);
+            return null;
+        }
+    },
+    // 생산일자 별 데이터 검수 현황
+    viewDataInspection: async (
+        start_date: string,
+        end_date: string,
+    ): Promise<DataInspectionResponse | null> => {
+        const { data } = await axiosInstance.get<DataInspectionResponse | FailResponse>(
+            `/api/productions/production-histories/daily-exception-refined-stats/`,
+            {
+                params: { start_date, end_date }
+            }
+        );
+
+        if (data.status === "SUCCESS") {
+            return data;
+        } else {
+            console.log('viewDataInspection api fail', data.data.message);
             return null;
         }
     },

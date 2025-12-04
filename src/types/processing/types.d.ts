@@ -9,12 +9,6 @@ export interface ExceptionDataPoint {
   productionLine: string;
   count: number;
 }
-// 생산일자 별 데이터 검수 현황 그래프
-export interface InspectionDataPoint {
-  date: string;
-  inspected: number; // 검수 완료
-  uninspected: number; // 검수 미완료
-}
 
 /* API */
 // API: 생산 이력 상세 조회 + 폴리곤
@@ -43,4 +37,15 @@ export interface UpdatedPolygonRequest {
 export interface UpdatedPolygonResponse {
   status: "SUCCESS";
   data: string; // "" 예정
+}
+// API: 생산일자 별 데이터 검수 현황
+export interface DataInspectionData {
+  date: string;
+  exception_count: number; // 검수 미완료
+  refined_count: number; // 검수 완료
+}
+
+export interface DataInspectionResponse {
+  status: "SUCCESS";
+  data: DataInspectionData[];
 }
