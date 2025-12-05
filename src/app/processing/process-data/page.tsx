@@ -230,6 +230,7 @@ export default function ProcessDataPage() {
               value={filters.production_name}
               onChange={(value) => handleFilterChange("production_name", value)}
               options={productOptions}
+              className="w-[200px]"
             />
 
             <Picker
@@ -270,6 +271,7 @@ export default function ProcessDataPage() {
               value={filters.applied_model}
               onChange={(value) => handleFilterChange("applied_model", value)}
               options={modelOptions}
+              className="w-[230px]"
             />
           </div>
         </div>

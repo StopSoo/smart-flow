@@ -178,13 +178,13 @@ export default function ProcessDataDetailPage() {
             <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
               <h2 className="text-lg text-black">검사 항목</h2>
             </div>
-            <div className="flex flex-row items-center justify-center w-full gap-3 px-4 py-4 font-bold">
+            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
               <p>{data?.production_name}</p>
             </div>
             <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
               <h2 className="text-lg text-black">ROLL 번호</h2>
             </div>
-            <div className="flex flex-row items-center justify-center w-full gap-3 px-4 py-4 font-bold">
+            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
               <p>{data?.mold_no}</p>
             </div>
           </div>
@@ -193,13 +193,13 @@ export default function ProcessDataDetailPage() {
             <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
               <h2 className="text-lg text-black">생산일자</h2>
             </div>
-            <div className="flex flex-row items-center justify-center w-full gap-3 px-4 py-4 font-bold">
+            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
               <p>{data?.created_at ? formatDate(data?.created_at) : "ㅡ"}</p>
             </div>
             <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
               <h2 className="text-lg text-black">생산라인</h2>
             </div>
-            <div className="flex flex-row items-center justify-center w-full gap-3 px-4 py-4 font-bold">
+            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
               <p>{data?.production_line.name}</p>
             </div>
           </div>
@@ -208,13 +208,13 @@ export default function ProcessDataDetailPage() {
             <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
               <h2 className="text-lg text-black">AI 검사일자</h2>
             </div>
-            <div className="flex flex-row items-center justify-center w-full gap-3 px-4 py-4 font-bold">
+            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
               <p>{data?.first_image_created_at ? formatDate(data?.first_image_created_at) : "ㅡ"}</p>
             </div>
             <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
               <h2 className="text-lg text-black">AI 검사 결과</h2>
             </div>
-            <div className="flex flex-row items-center justify-center w-full gap-3 px-4 py-4 font-bold">
+            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
               <p
                 className={`${data?.is_abnormal
                   ? "text-point-red"

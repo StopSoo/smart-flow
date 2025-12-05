@@ -26,14 +26,23 @@ export default function HistogramChart({
     if (!datasets || datasets.length === 0) {
       return [];
     }
-
+    // X축 값 정의
     const countMap = new Map<number, number>();
-
     datasets.forEach(item => {
       const maskPolyValue = item.mask_poly;
       countMap.set(maskPolyValue, (countMap.get(maskPolyValue) || 0) + 1);
     });
-
+    const minMaskPolyValue = Math.min(...datasets.map((d) => d.mask_poly));
+    const maxMaskPolyValue = Math.max(...datasets.map((d) => d.mask_poly));
+    Array.from(
+      { length: maxMaskPolyValue - minMaskPolyValue + 1 },
+      (_, i) => i + minMaskPolyValue
+    ).forEach((number) => {
+      if (!countMap.has(number)) {
+        countMap.set(number, 0);
+      }
+    });
+    // 정렬
     const data = Array.from(countMap.entries())
       .map(([maskPoly, count]) => ({
         maskPoly,
@@ -65,13 +74,13 @@ export default function HistogramChart({
   if (!datasets || datasets.length === 0) {
     return (
       <div className="w-full h-[400px] border-[4px] border-light-gray bg-white flex items-center justify-center">
-        <p className="text-medium-gray text-lg">데이터가 없습니다</p>
+        <p className="text-medium-gray text-lg font-bold">데이터가 없습니다</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full border-[4px] border-light-gray bg-white p-8">
+    <div className="w-full min-w-[1000px] border-[4px] border-light-gray bg-white p-8">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-bold text-black">데이터 분포</h3>
@@ -82,7 +91,7 @@ export default function HistogramChart({
 
         <div className="relative w-full h-[300px] flex flex-col">
           <div className="absolute -left-4 top-1/2 -translate-y-1/2 -rotate-90">
-            <p className="text-sm font-medium text-medium-gray whitespace-nowrap">
+            <p className="text-md font-medium text-medium-gray whitespace-nowrap font-semibold">
               수량 (건)
             </p>
           </div>
@@ -125,24 +134,34 @@ export default function HistogramChart({
                       }}
                     >
                       {
-                        barHeight > 30 && (
+                        item.count > 0 && (
                           <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-medium text-black">
                             {item.count.toLocaleString()}
                           </div>
                         )
                       }
+
+                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-medium text-black">
+                        {item.maskPoly.toLocaleString()}
+                      </div>
                     </div>
                   </div>
                 );
               })
             }
+
+            <div className="absolute right-4 -bottom-3 -translate-y-1/2">
+              <p className="text-md font-medium text-medium-gray whitespace-nowrap font-semibold">
+                점 개수 (개)
+              </p>
+            </div>
           </div>
 
           <div className="flex justify-between pl-8 pr-4 pt-2">
-            <p className="text-sm font-medium text-medium-gray">
+            <p className="text-md font-medium text-medium-gray">
               정상/불량 데이터: {normalDefectCount.toLocaleString()}건
             </p>
-            <p className="text-sm font-medium text-medium-gray">
+            <p className="text-md font-medium text-medium-gray">
               AI 예외 데이터 (검수 대상) {exceptionCount.toLocaleString()}건
             </p>
           </div>

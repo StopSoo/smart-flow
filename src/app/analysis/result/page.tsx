@@ -275,6 +275,7 @@ export default function ResultPage() {
               value={filters.applied_model}
               onChange={(value) => handleFilterChange("applied_model", value)}
               options={modelOptions}
+              className="w-[230px]"
             />
           </div>
         </div>
