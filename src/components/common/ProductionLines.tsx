@@ -18,7 +18,9 @@ function ProductionLineCard({ line }: { line: ProductionLineListItem }) {
         />
       </div>
       <div className="flex flex-col items-center gap-2 text-medium-gray">
-        <p className="text-lg font-bold">{line.latest_history?.production_name}</p>
+        <p className="text-lg font-bold h-[30px]">
+          {line.latest_history?.production_name !== "" ? line.latest_history?.production_name : "ㅡ"}
+        </p>
         <p>ROLL {line.latest_history?.total_count}개 생산</p>
         <p>
           양품 {line.latest_history?.normal_count}개 | 불량 {line.latest_history?.defective_count}개

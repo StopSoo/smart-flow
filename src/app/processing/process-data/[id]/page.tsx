@@ -15,6 +15,8 @@ import { processingApi } from "@/apis/processing";
 import { commonApi } from "@/apis/common";
 import { formatDate } from "@/utils/formatDate";
 import { ContactpinImageResults, ProductionHistoryItem } from "@/types/processing/types";
+import ProcessDataDetailSkeleton from "@/components/skeleton/ProcessDataDetailSkeleton";
+import DetailTableSkeleton from "@/components/skeleton/DetailTableSkeleton";
 
 export default function ProcessDataDetailPage() {
   const params = useParams();
@@ -23,6 +25,8 @@ export default function ProcessDataDetailPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null); // 비트맵 이미지용 ref 객체
 
   const [data, setData] = useState<ProductionHistoryItem>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isImageListLoading, setIsImageListLoading] = useState(false);
   const [imageData, setImageData] = useState<ContactpinImageResults[]>([]);
   const [bitmapOn, setBitmapOn] = useState<boolean>(false);
   const itemsPerPage = '10';
@@ -121,6 +125,8 @@ export default function ProcessDataDetailPage() {
 
   const handleData = async () => {
     try {
+      setIsImageListLoading(true);
+
       const [data, imageData] = await Promise.all([
         processingApi.viewProductionHistoryItem(
           filters.classification_result, currentPage, Number(itemsPerPage), filters.refined, Number(id)
@@ -138,6 +144,9 @@ export default function ProcessDataDetailPage() {
       }
     } catch (error) {
       console.log('handleData error', error);
+    } finally {
+      setIsLoading(false);
+      setIsImageListLoading(false);
     }
   };
 
@@ -180,259 +189,273 @@ export default function ProcessDataDetailPage() {
     <Layout headerTitle="데이터 가공">
       <div className="w-full flex flex-col">
         <SemiHeader headerTitle="결과 상세 조회" />
+        {
+          isLoading ? (
+            <ProcessDataDetailSkeleton />
+          ) : (
+            <>
+              <div className="flex flex-col p-6">
+                <div className="flex flex-row items-center bg-white border-t-2 border-light-gray">
+                  <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
+                    <h2 className="text-lg text-black">검사 항목</h2>
+                  </div>
+                  <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
+                    <p>{data?.production_name}</p>
+                  </div>
+                  <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
+                    <h2 className="text-lg text-black">ROLL 번호</h2>
+                  </div>
+                  <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
+                    <p>{data?.mold_no}</p>
+                  </div>
+                </div >
 
-        <div className="flex flex-col p-6">
-          <div className="flex flex-row items-center bg-white border-t-2 border-light-gray">
-            <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
-              <h2 className="text-lg text-black">검사 항목</h2>
-            </div>
-            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
-              <p>{data?.production_name}</p>
-            </div>
-            <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
-              <h2 className="text-lg text-black">ROLL 번호</h2>
-            </div>
-            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
-              <p>{data?.mold_no}</p>
-            </div>
-          </div>
+                <div className="flex flex-row items-center bg-white border-y-2 border-light-gray">
+                  <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
+                    <h2 className="text-lg text-black">생산일자</h2>
+                  </div>
+                  <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
+                    <p>{data?.created_at ? formatDate(data?.created_at) : "ㅡ"}</p>
+                  </div>
+                  <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
+                    <h2 className="text-lg text-black">생산라인</h2>
+                  </div>
+                  <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
+                    <p>{data?.production_line.name}</p>
+                  </div>
+                </div>
 
-          <div className="flex flex-row items-center bg-white border-y-2 border-light-gray">
-            <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
-              <h2 className="text-lg text-black">생산일자</h2>
-            </div>
-            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
-              <p>{data?.created_at ? formatDate(data?.created_at) : "ㅡ"}</p>
-            </div>
-            <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
-              <h2 className="text-lg text-black">생산라인</h2>
-            </div>
-            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
-              <p>{data?.production_line.name}</p>
-            </div>
-          </div>
+                <div className="flex flex-row items-center bg-white border-b-2 border-light-gray">
+                  <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
+                    <h2 className="text-lg text-black">AI 검사일자</h2>
+                  </div>
+                  <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
+                    <p>{data?.first_image_created_at ? formatDate(data?.first_image_created_at) : "ㅡ"}</p>
+                  </div>
+                  <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
+                    <h2 className="text-lg text-black">AI 검사 결과</h2>
+                  </div>
+                  <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
+                    <p
+                      className={`${data?.is_abnormal
+                        ? "text-point-red"
+                        : "text-medium-gray"
+                        }`}
+                    >
+                      {data?.is_abnormal ? "불량" : "정상"}
+                    </p>
+                  </div>
+                </div>
+              </div >
 
-          <div className="flex flex-row items-center bg-white border-b-2 border-light-gray">
-            <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
-              <h2 className="text-lg text-black">AI 검사일자</h2>
-            </div>
-            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
-              <p>{data?.first_image_created_at ? formatDate(data?.first_image_created_at) : "ㅡ"}</p>
-            </div>
-            <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px] font-bold">
-              <h2 className="text-lg text-black">AI 검사 결과</h2>
-            </div>
-            <div className="flex flex-row items-center justify-center w-full min-w-[360px] gap-3 py-4 font-bold">
-              <p
-                className={`${data?.is_abnormal
-                  ? "text-point-red"
-                  : "text-medium-gray"
-                  }`}
-              >
-                {data?.is_abnormal ? "불량" : "정상"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="px-6">
-          <HistogramChart
-            datasets={data?.datasets}
-            totalCount={data?.datasets.length || 0}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-6 p-6">
-          <div className="flex flex-col min-w-[500px] gap-6">
-            <div className="flex flex-row items-center bg-white border-y-2 border-light-gray">
-              <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px]">
-                <h2 className="text-lg font-bold text-black">분류</h2>
-              </div>
-              <div className="flex flex-row items-center justify-start w-full gap-3 px-4">
-                <Picker
-                  type="select"
-                  title="AI 결과"
-                  value={filters.classification_result}
-                  onChange={(value) =>
-                    handleFilterChange("classification_result", value)
-                  }
-                  options={classificationResultOptions}
-                />
-                <Picker
-                  type="select"
-                  title="가공 여부"
-                  value={filters.refined}
-                  onChange={(value) => handleFilterChange("refined", value)}
-                  options={refinedOptions}
+              <div className="px-6">
+                <HistogramChart
+                  datasets={data?.datasets}
+                  totalCount={data?.datasets.length || 0}
                 />
               </div>
-            </div>
 
-            <div className="flex flex-row justify-end font-bold text-black">
-              <p>전체: {data ? imageData.length : 0}건</p>
-            </div>
+              <div className="grid grid-cols-2 gap-6 p-6">
+                <div className="flex flex-col min-w-[500px] gap-6">
+                  <div className="flex flex-row items-center bg-white border-y-2 border-light-gray">
+                    <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px]">
+                      <h2 className="text-lg font-bold text-black">분류</h2>
+                    </div>
+                    <div className="flex flex-row items-center justify-start w-full gap-3 px-4">
+                      <Picker
+                        type="select"
+                        title="AI 결과"
+                        value={filters.classification_result}
+                        onChange={(value) =>
+                          handleFilterChange("classification_result", value)
+                        }
+                        options={classificationResultOptions}
+                      />
+                      <Picker
+                        type="select"
+                        title="가공 여부"
+                        value={filters.refined}
+                        onChange={(value) => handleFilterChange("refined", value)}
+                        options={refinedOptions}
+                      />
+                    </div>
+                  </div>
 
-            <div className="bg-white border-y-2 border-light-gray overflow-hidden">
-              <table className="w-full h-[550px]">
-                <thead className="border-b border-light-gray bg-soft-white py-3 text-center text-lg font-bold text-black">
-                  <tr>
-                    <th className="py-3 w-[80px]">No</th>
-                    <th className="py-3 w-[400px]">컨택트 핀 이미지</th>
-                    <th className="py-3 w-[140px]">AI 결과</th>
-                    <th className="py-3">가공 여부</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {
-                    imageData.length !== 0 ? (
-                      imageData.map((item, idx) => (
-                        <tr
-                          key={String((currentPage - 1) * Number(itemsPerPage) + idx) + '_' + item.id}
-                          className={`h-[55px] text-base border-b border-light-gray text-center cursor-pointer ${selectedImageId === item.id ? "bg-point-blue/50 text-white" : "bg-white hover:bg-light-gray/30"}`}
-                          onClick={() => {
-                            setSelectedImageId(item.id);
-                            setSelectedImageUrl(item.image_url);
-                          }}
-                        >
-                          <td className="px-4 py-3 w-[80px]">{(currentPage - 1) * Number(itemsPerPage) + idx + 1}</td>
-                          <td className="px-4 py-3 w-[400px]">{item.id}</td>
-                          <td className={`px-4 py-3 font-bold ${item.classification_result === "불량" ? "text-point-red" : selectedImageId === item.id ? "text-white" : "text-medium-gray"} `}>
-                            {item.classification_result}
-                          </td>
-                          <td className="px-4 py-3">{item.refined_at !== null ? "O" : "X"}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan={8}
-                          className="py-40 text-center font-bold text-lg text-medium-gray"
-                        >
-                          조회되는 데이터가 없습니다.
-                        </td>
-                      </tr>
-                    )
-                  }
+                  <div className="flex flex-row justify-end font-bold text-black">
+                    <p>전체: {data ? data.datasets.length : 0}건</p>
+                  </div>
 
                   {
-                    imageData && imageData.length > 0 && Array.from({
-                      length: Math.max(
-                        0,
-                        Number(itemsPerPage) -
-                        imageData.length
-                      ),
-                    }).map((_, i) => (
-                      <tr
-                        key={`empty-${i}`}
-                        className="h-[55px] border-b border-light-gray"
-                      >
-                        <td colSpan={8}></td>
-                      </tr>
-                    ))
-                  }
-                </tbody>
-              </table>
-            </div>
+                    isImageListLoading
+                      ? <DetailTableSkeleton />
+                      : (
+                        <div className="bg-white border-y-2 border-light-gray overflow-hidden">
+                          <table className="w-full h-[550px]">
+                            <thead className="border-b border-light-gray bg-soft-white py-3 text-center text-lg font-bold text-black">
+                              <tr>
+                                <th className="py-3 w-[80px]">No</th>
+                                <th className="py-3 w-[400px]">컨택트 핀 이미지</th>
+                                <th className="py-3 w-[140px]">AI 결과</th>
+                                <th className="py-3">가공 여부</th>
+                              </tr>
+                            </thead>
 
-            {
-              imageData && imageData.length > 0
-              && <Pagination
-                total={imageData.length}
-                page={currentPage}
-                limit={Number(itemsPerPage)}
-                tab={currentTab}
-                setPage={setCurrentPage}
-                setTab={setCurrentTab}
-              />
-            }
-          </div>
+                            <tbody>
+                              {
+                                imageData.length !== 0 ? (
+                                  imageData.map((item, idx) => (
+                                    <tr
+                                      key={String((currentPage - 1) * Number(itemsPerPage) + idx) + '_' + item.id}
+                                      className={`h-[55px] text-base border-b border-light-gray text-center cursor-pointer ${selectedImageId === item.id ? "bg-point-blue/50 text-white" : "bg-white hover:bg-light-gray/30"}`}
+                                      onClick={() => {
+                                        setSelectedImageId(item.id);
+                                        setSelectedImageUrl(item.image_url);
+                                      }}
+                                    >
+                                      <td className="px-4 py-3 w-[80px]">{(currentPage - 1) * Number(itemsPerPage) + idx + 1}</td>
+                                      <td className="px-4 py-3 w-[400px]">{item.id}</td>
+                                      <td className={`px-4 py-3 font-bold ${item.classification_result === "불량" ? "text-point-red" : selectedImageId === item.id ? "text-white" : "text-medium-gray"} `}>
+                                        {item.classification_result}
+                                      </td>
+                                      <td className="px-4 py-3">{item.refined_at !== null ? "O" : "X"}</td>
+                                    </tr>
+                                  ))
+                                ) : (
+                                  <tr>
+                                    <td
+                                      colSpan={8}
+                                      className="py-40 text-center font-bold text-lg text-medium-gray"
+                                    >
+                                      조회되는 데이터가 없습니다.
+                                    </td>
+                                  </tr>
+                                )
+                              }
 
-          <div className="min-w-[500px] flex flex-col gap-6">
-            <div>
-              <div className="flex flex-row items-center bg-white border-t-2 border-light-gray">
-                <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px]">
-                  <h2 className="text-lg font-bold text-black">가공 타입</h2>
-                </div>
-                <div className="flex flex-row items-center justify-center w-full gap-3 px-4">
-                  <p>Polygon</p>
-                </div>
-              </div>
-
-              <div className="flex flex-row items-center bg-white border-y-2 border-light-gray">
-                <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px]">
-                  <h2 className="text-lg font-bold text-black">라벨</h2>
-                </div>
-                <div className="flex flex-row items-center justify-center w-full gap-3 px-4">
-                  <Picker
-                    type="select"
-                    title=""
-                    value={filters.label}
-                    onChange={(value) => handleFilterChange("label", value)}
-                    options={labelOptions}
-                    className="w-[140px]"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-row items-center bg-white border-b-2 border-light-gray">
-                <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px]">
-                  <h2 className="text-lg font-bold text-black">비트맵</h2>
-                </div>
-                <div className="flex flex-row items-center justify-center w-full gap-3 px-4">
-                  <input
-                    type="checkbox"
-                    disabled={selectedImageId === ''}
-                    checked={bitmapOn}
-                    onChange={() => setBitmapOn(!bitmapOn)}
-                    className="w-8 h-8 cursor-pointer accent-point-blue"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="h-[510px] border-[4px] border-light-gray bg-soft-white flex items-center justify-center p-6">
-              {
-                selectedImageId === '' ? (
-                  <p className="text-medium-gray text-xl">
-                    이미지를 선택해주세요
-                  </p>
-                ) : (
-                  <div className="flex flex-col items-center gap-12">
-                    <p className="text-xl text-black font-bold">이미지 View</p>
-                    {
-                      bitmapOn ? (
-                        <canvas
-                          ref={canvasRef}
-                          className="max-w-full max-h-[330px] object-contain"
-                        />
+                              {
+                                imageData && imageData.length > 0 && Array.from({
+                                  length: Math.max(
+                                    0,
+                                    Number(itemsPerPage) -
+                                    imageData.length
+                                  ),
+                                }).map((_, i) => (
+                                  <tr
+                                    key={`empty-${i}`}
+                                    className="h-[55px] border-b border-light-gray"
+                                  >
+                                    <td colSpan={8}></td>
+                                  </tr>
+                                ))
+                              }
+                            </tbody>
+                          </table>
+                        </div>
                       )
-                        : <Image
-                          src={selectedImageUrl}
-                          alt="contact pin image"
-                          width={440}
-                          height={330}
-                          priority
-                          fetchPriority="high"
-                          unoptimized
+                  }
+
+                  {
+                    data?.datasets && data?.datasets.length > 0
+                    && <Pagination
+                      total={data?.datasets.length}
+                      page={currentPage}
+                      limit={Number(itemsPerPage)}
+                      tab={currentTab}
+                      setPage={setCurrentPage}
+                      setTab={setCurrentTab}
+                    />
+                  }
+                </div>
+
+                <div className="min-w-[500px] flex flex-col gap-6">
+                  <div>
+                    <div className="flex flex-row items-center bg-white border-t-2 border-light-gray">
+                      <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px]">
+                        <h2 className="text-lg font-bold text-black">가공 타입</h2>
+                      </div>
+                      <div className="flex flex-row items-center justify-center w-full gap-3 px-4">
+                        <p>Polygon</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-row items-center bg-white border-y-2 border-light-gray">
+                      <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px]">
+                        <h2 className="text-lg font-bold text-black">라벨</h2>
+                      </div>
+                      <div className="flex flex-row items-center justify-center w-full gap-3 px-4">
+                        <Picker
+                          type="select"
+                          title=""
+                          value={filters.label}
+                          onChange={(value) => handleFilterChange("label", value)}
+                          options={labelOptions}
+                          className="w-[140px]"
                         />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-row items-center bg-white border-b-2 border-light-gray">
+                      <div className="flex items-center justify-center bg-soft-white min-w-[140px] h-[70px]">
+                        <h2 className="text-lg font-bold text-black">비트맵</h2>
+                      </div>
+                      <div className="flex flex-row items-center justify-center w-full gap-3 px-4">
+                        <input
+                          type="checkbox"
+                          disabled={selectedImageId === ''}
+                          checked={bitmapOn}
+                          onChange={() => setBitmapOn(!bitmapOn)}
+                          className="w-8 h-8 cursor-pointer accent-point-blue"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="h-[510px] border-[4px] border-light-gray bg-soft-white flex items-center justify-center p-6">
+                    {
+                      selectedImageId === '' ? (
+                        <p className="text-medium-gray text-xl">
+                          이미지를 선택해주세요
+                        </p>
+                      ) : (
+                        <div className="flex flex-col items-center gap-12">
+                          <p className="text-xl text-black font-bold">이미지 View</p>
+                          {
+                            bitmapOn ? (
+                              <canvas
+                                ref={canvasRef}
+                                className="max-w-full max-h-[330px] object-contain"
+                              />
+                            )
+                              : <Image
+                                src={selectedImageUrl}
+                                alt="contact pin image"
+                                width={440}
+                                height={330}
+                                priority
+                                fetchPriority="high"
+                                unoptimized
+                              />
+                          }
+                        </div>
+                      )
                     }
                   </div>
-                )
-              }
-            </div>
 
-            <MultipleButton
-              type="default"
-              title="이미지 편집하기"
-              disabled={selectedImageId === undefined}
-              className="text-lg"
-              onClick={() =>
-                router.push(`/processing/process-data/${id}/edit`)
-              }
-            />
-          </div>
-        </div>
+                  <MultipleButton
+                    type="default"
+                    title="이미지 편집하기"
+                    disabled={selectedImageId === undefined}
+                    className="text-lg"
+                    onClick={() =>
+                      router.push(`/processing/process-data/${id}/edit`)
+                    }
+                  />
+                </div>
+              </div>
+            </>
+
+          )
+        }
       </div >
     </Layout >
   );

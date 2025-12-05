@@ -259,10 +259,7 @@ export interface ProductionLineListItem {
     name: string; // 생산라인 이름
     status: "activated" | "maintenance" | "stop";
     latest_history: {
-        id: number;
-        status: "collecting" | "classifying" | "completed" | "stop";
         production_name: string; // 생산품명
-        created_at: string; // 생산 날짜
         total_count: number;
         normal_count: number;
         defective_count: number;
