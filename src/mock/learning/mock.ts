@@ -1,10 +1,9 @@
-import { ResultsItem, ViewTestStandardResults } from "@/types/learning/types";
+import { ResultsItem, TestStandard } from "@/types/learning/types";
 
 export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 1,
         server_type: "contactpin_1 외 1종",
-        status: "ready",
         dataset_count: 1200,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -15,7 +14,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 2,
         server_type: "contactpin_1 외 1종",
-        status: "ready",
         dataset_count: 500,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -26,7 +24,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 3,
         server_type: "contactpin_1 외 1종",
-        status: "processing",
         dataset_count: 1100,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0.99,
@@ -40,7 +37,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 4,
         server_type: "contactpin_1 외 1종",
-        status: "processing",
         dataset_count: 600,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -51,7 +47,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 5,
         server_type: "contactpin_1 외 1종",
-        status: "processing",
         dataset_count: 920,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -62,7 +57,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 6,
         server_type: "contactpin_1 외 1종",
-        status: "processing",
         dataset_count: 300,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -73,7 +67,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 7,
         server_type: "contactpin_1 외 1종",
-        status: "processing",
         dataset_count: 1200,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -84,7 +77,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 8,
         server_type: "contactpin_1 외 1종",
-        status: "done",
         dataset_count: 100,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -95,7 +87,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 9,
         server_type: "contactpin_1 외 1종",
-        status: "done",
         dataset_count: 600,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -106,7 +97,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 10,
         server_type: "contactpin_1 외 1종",
-        status: "processing",
         dataset_count: 300,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -117,7 +107,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 11,
         server_type: "contactpin_1 외 1종",
-        status: "processing",
         dataset_count: 1200,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -128,7 +117,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 12,
         server_type: "contactpin_1 외 1종",
-        status: "done",
         dataset_count: 100,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -139,7 +127,6 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     {
         id: 13,
         server_type: "contactpin_1 외 1종",
-        status: "done",
         dataset_count: 600,
         process_done_at: "2025-11-27 11:22:33",
         accuracy: 0,
@@ -149,7 +136,7 @@ export const LIST_MOCK_DATA: ResultsItem[] = [
     },
 ];
 
-export const PL_DETAIL_MOCK_DATA: ViewTestStandardResults[] = [
+export const PL_DETAIL_MOCK_DATA: TestStandard[] = [
     {
         parameters: {
             angl: {

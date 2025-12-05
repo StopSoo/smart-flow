@@ -277,16 +277,6 @@ export interface ProductionLineListResponse {
     };
 }
 // ----------
-// API: 생산 이력 삭제
-export interface DeleteProductionHistoriesRequest {
-    ids: number[];
-}
-
-export interface DeleteProductionHistoriesResponse {
-    status: "SUCCESS";
-    data: string; // "" 예정
-}
-// ----------
 // API: 검수 AI 모델 이름 목록 조회
 export interface AIModelNameListResponse {
     status: "SUCCESS";

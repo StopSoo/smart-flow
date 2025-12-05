@@ -1,19 +1,19 @@
 import axiosInstance from "./axiosInstance";
 import {
     AIModelNameListResponse,
-    DeleteProductionHistoriesRequest,
-    DeleteProductionHistoriesResponse,
     PolygonDataResponse,
     ProductionLineListResponse
 } from "@/types/analysis/types";
 import {
+    DeleteRequest,
+    DeleteResponse,
     FailResponse,
     ProductionHistoryResponse,
     ViewDailyNormalDefectRatioResponse
 } from "@/types/common/types";
 
 export const commonApi = {
-    // 일일 양불 비율 조회
+    // 일일 양불 비율 조회 (분석 / 가공)
     checkDailyNormalDefectRatio: async (
         date: string,
     ) => {
@@ -39,7 +39,7 @@ export const commonApi = {
             return null;
         }
     },
-    // 생산 이력 조회 (가공/분석)
+    // 생산 이력 조회 (가공 / 분석)
     viewProductionHistories: async (
         applied_model: string | null = null,
         start_created_at: string | null = null,
@@ -79,9 +79,9 @@ export const commonApi = {
     },
     // 생산 이력 삭제
     deleteProductionHistories: async (
-        ids: DeleteProductionHistoriesRequest
+        ids: DeleteRequest
     ): Promise<string | null> => {
-        const { data } = await axiosInstance.delete<DeleteProductionHistoriesResponse | FailResponse>(
+        const { data } = await axiosInstance.delete<DeleteResponse | FailResponse>(
             '/api/productions/production-histories/delete/',
             {
                 data: ids
@@ -95,7 +95,7 @@ export const commonApi = {
             return null;
         }
     },
-    // 검수 AI 모델 이름 목록
+    // 검수 AI 모델 이름 목록 조회 (분석 / 가공 / 학습)
     viewAIModelNameList: async (): Promise<AIModelNameListResponse | null> => {
         const { data } = await axiosInstance.get<AIModelNameListResponse | FailResponse>(
             '/api/model_managements/inspection-ai-models/list-names/',

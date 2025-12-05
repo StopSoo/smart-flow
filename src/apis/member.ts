@@ -18,7 +18,6 @@ export const memberApi = {
                 memberInfo
             );
 
-        console.log("로그인 api", data);
         if (data.status === "SUCCESS") {
             localStorage.setItem('accessToken', data.data.token); // localStorage에 token 저장
             return data;

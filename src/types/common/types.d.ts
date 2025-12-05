@@ -95,3 +95,13 @@ export interface ProductionHistoryResponse {
     status: "SUCCESS";
     data: ProductionHistoryData;
 }
+// ----------
+// API: 생산 이력 삭제
+export interface DeleteRequest {
+    ids: number[];
+}
+
+export interface DeleteResponse {
+    status: "SUCCESS";
+    data: string; // "" 예정
+}
